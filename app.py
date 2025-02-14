@@ -1,7 +1,13 @@
 import streamlit as st
 from transformers import pipeline
 import torch
+from huggingface_hub import login
 
+# Get the API token securely
+hf_token = st.secrets["HUGGINGFACE_TOKEN"]
+
+# Log in to Hugging Face
+login(token=hf_token)
 
 #!git config --global user.name "anamargarida"
 #!git config --global user.email "anamargaridasilva320@gmail.com"
