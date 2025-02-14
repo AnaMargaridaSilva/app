@@ -4,3 +4,5 @@ torch
 typing-extensions
 streamlit
 pyngrok
+huggingface_hub
+torch torchvision torchaudio
