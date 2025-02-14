@@ -1,0 +1,6 @@
+gradio
+transformers
+torch
+typing-extensions
+streamlit
+pyngrok
