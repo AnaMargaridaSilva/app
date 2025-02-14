@@ -14,7 +14,7 @@ device = 0 if torch.cuda.is_available() else -1
 classifier = pipeline('text-classification', model=model_name, device=device)
 
 # Streamlit interface
-st.title("Signal Classification with Only 1 Model")
+st.title("Signal Detection with One Model")
 input_text = st.text_area("Enter a sentence for classification")
 
 if st.button("Classify"):
