@@ -1,3 +1,4 @@
+"""
 import streamlit as st
 from transformers import pipeline
 import torch
@@ -47,3 +48,63 @@ if st.button("Classify"):
 
     else:
         st.warning("Please enter some text for classification.")
+"""
+
+import streamlit as st
+from transformers import pipeline
+import torch
+import numpy as np
+from huggingface_hub import login
+
+hf_token = st.secrets["HUGGINGFACE_TOKEN"]
+login(token=hf_token)
+
+model_names = [
+    "anamargarida/my_model",
+    "anamargarida/my_model_larger_dataset"
+]
+
+# Set device for inference
+device = 0 if torch.cuda.is_available() else -1
+
+# Load all models into pipelines
+@st.cache_resource
+def load_models():
+    return [pipeline("text-classification", model=model_name, device=device) for model_name in model_names]
+
+models = load_models()
+
+st.title("Signal Detection with an Ensemble of Models")
+st.write("Enter text below, and the ensemble model will classify it using weighted voting.")
+
+# User input
+input_text = st.text_area("Enter a sentence for classification")
+
+if st.button("Classify"):
+    if input_text.strip():
+        predictions = []
+        scores = []
+        
+        # Get predictions and scores from all models
+        for classifier in models:
+            result = classifier(input_text)[0]  # Get first result
+            predictions.append(result["label"])  # Extract label
+            scores.append(result["score"])  # Extract confidence score
+        
+        # Weighted voting: Choose label with highest total confidence
+        unique_labels = set(predictions)
+        label_scores = {label: 0 for label in unique_labels}
+        
+        for label, score in zip(predictions, scores):
+            label_scores[label] += score  # Sum scores for each label
+        
+        final_prediction = max(label_scores, key=label_scores.get)  # Label with highest total score
+        
+        # Display results
+        st.write(f"### Ensemble Prediction: **{final_prediction}**")
+        for i, (model, label, score) in enumerate(zip(model_names, predictions, scores)):
+            st.write(f"**{model}:** {label} (Confidence: {score:.4f})")
+
+    else:
+        st.warning("Please enter some text for classification.")
+
