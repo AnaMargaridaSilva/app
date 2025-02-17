@@ -60,8 +60,11 @@ hf_token = st.secrets["HUGGINGFACE_TOKEN"]
 login(token=hf_token)
 
 model_names = [
-    "anamargarida/my_model",
-    "anamargarida/ensemble_model_seed_42"
+    "anamargarida/ensemble_model_seed_42",
+    "anamargarida/ensemble_model_seed_123",
+    "anamargarida/ensemble_model_seed_777",
+    "anamargarida/ensemble_model_seed_999",
+    "anamargarida/ensemble_model_seed_2024"
 ]
 
 # Set device for inference
