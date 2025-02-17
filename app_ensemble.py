@@ -1,4 +1,4 @@
-"""
+b"""
 import streamlit as st
 from transformers import pipeline
 import torch
@@ -61,7 +61,7 @@ login(token=hf_token)
 
 model_names = [
     "anamargarida/my_model",
-    "anamargarida/my_model_larger_dataset"
+    "anamargarida/ensemble_model_seed_42"
 ]
 
 # Set device for inference
