@@ -13,7 +13,7 @@ def load_model():
     
     tokenizer = AutoTokenizer.from_pretrained("roberta-large")  
     
-    model = AutoModelForTokenClassification.from_pretrained(model_name)
+    model = RobertaForTokenClassification.from_pretrained(model_name)
     model.eval()
     return tokenizer, model
 
