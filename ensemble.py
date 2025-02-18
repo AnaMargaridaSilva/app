@@ -24,7 +24,7 @@ def load_models():
 
 models = load_models()
 
-st.title("Signal Detection with an Ensemble of Models")
+st.title("Signal Detection with an Ensemble")
 st.write("Enter text below, and the ensemble model will classify it using majority voting.")
 
 # User input
@@ -51,7 +51,7 @@ if st.button("Classify"):
             final_prediction = max(label_avg_scores, key=label_avg_scores.get)  # Pick label with highest average confidence
 
         # Display results
-        st.write(f"### Ensemble Prediction (Majority voting Voting): **{final_prediction}**")
+        st.write(f"### Ensemble Prediction (Majority Voting): **{final_prediction}**")
         
         # Show individual model results
         for i, (model, label, score) in enumerate(zip(model_names, predictions, scores)):
