@@ -18,13 +18,7 @@ def load_model():
     config = AutoConfig.from_pretrained("roberta-large")
     tokenizer = AutoTokenizer.from_pretrained("roberta-large")
     
-    # Set any other arguments required for ST2ModelV2
-    args = {
-        'model_name_or_path': model_name,
-        'dropout': 0.3,  # Example dropout rate, adjust based on your needs
-       
-    }
-
+    
     # Instantiate the custom model
     model = ST2ModelV2(args)
     
