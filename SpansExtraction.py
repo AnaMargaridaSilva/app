@@ -2,6 +2,8 @@ import streamlit as st
 import torch
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 from huggingface_hub import login
+from ST2ModelV2 import ST2ModelV2 
+
 
 
 hf_token = st.secrets["HUGGINGFACE_TOKEN"]
@@ -9,11 +11,22 @@ login(token=hf_token)
 
 # Load model & tokenizer once (cached for efficiency)
 @st.cache_resource
+@st.cache_resource
 def load_model():
-    model_name = "anamargarida/Extraction_withseed777"
+    
+    model_name = "anamargarida/Extraction_withseed777"  # Example, update if needed
     config = AutoConfig.from_pretrained("roberta-large")
-    model = AutoModel.from_pretrained(model_name, config=config)
     tokenizer = AutoTokenizer.from_pretrained("roberta-large")
+    
+    # Set any other arguments required for ST2ModelV2
+    args = {
+        'model_name_or_path': model_name,
+        'dropout': 0.3,  # Example dropout rate, adjust based on your needs
+       
+    }
+
+    # Instantiate the custom model
+    model = ST2ModelV2(args)
     
     model.eval()
     return tokenizer, model
