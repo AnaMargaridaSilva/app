@@ -18,6 +18,54 @@ def load_model():
     model.eval()
     return tokenizer, model
 
+tokenizer, model = load_model()
+
+# Function to extract cause, effect, and signal arguments
+def extract_arguments(text, tokenizer, model):
+    inputs = tokenizer(text, return_tensors="pt")
+
+    with torch.no_grad():
+        outputs = model(**inputs)
+        
+    # Debugging: Check what the model returns
+    st.write("Model Output:", outputs)  # Full output to examine
+    st.write("Model output keys:", outputs.keys())  # Check available keys
+
+    # Extract start/end logits for each argument type
+    start_cause_logits = outputs.get("start_arg0_logits", None)
+    end_cause_logits = outputs.get("end_arg0_logits", None)
+    start_effect_logits = outputs.get("start_arg1_logits", None)
+    end_effect_logits = outputs.get("end_arg1_logits", None)
+    start_signal_logits = outputs.get("start_sig_logits", None)
+    end_signal_logits = outputs.get("end_sig_logits", None)
+
+    if start_cause_logits is not None:
+        st.write("Start Cause Logits Shape:", start_cause_logits.shape)
+    if end_cause_logits is not None:
+        st.write("End Cause Logits Shape:", end_cause_logits.shape)
+
+    # Get start/end token indices
+    start_cause = start_cause_logits.argmax().item() if start_cause_logits is not None else None
+    end_cause = end_cause_logits.argmax().item() if end_cause_logits is not None else None
+    start_effect = start_effect_logits.argmax().item() if start_effect_logits is not None else None
+    end_effect = end_effect_logits.argmax().item() if end_effect_logits is not None else None
+    start_signal = start_signal_logits.argmax().item() if start_signal_logits is not None else None
+    end_signal = end_signal_logits.argmax().item() if end_signal_logits is not None else None
+
+    st.write(f"Start Cause: {start_cause}, End Cause: {end_cause}")
+    st.write(f"Start Effect: {start_effect}, End Effect: {end_effect}")
+    st.write(f"Start Signal: {start_signal}, End Signal: {end_signal}")
+
+    # Convert token indices to words
+    tokens = tokenizer.convert_ids_to_tokens(inputs["input_ids"][0])
+    cause = tokenizer.convert_tokens_to_string(tokens[start_cause:end_cause+1]) if start_cause is not None and end_cause is not None else ""
+    effect = tokenizer.convert_tokens_to_string(tokens[start_effect:end_effect+1]) if start_effect is not None and end_effect is not None else ""
+    signal = tokenizer.convert_tokens_to_string(tokens[start_signal:end_signal+1]) if start_signal is not None and end_signal is not None else ""
+
+    return cause, effect, signal
+
+
+"""
 # Function to extract cause, effect, and signal arguments
 def extract_arguments(text, tokenizer, model):
     inputs = tokenizer(text, return_tensors="pt")
@@ -77,3 +125,4 @@ if st.button("Extract Arguments"):
         st.markdown(f"**Extracted Arguments:**<br>{highlighted_text}", unsafe_allow_html=True)
     else:
         st.warning("Please enter some text before extracting.")
+"""
