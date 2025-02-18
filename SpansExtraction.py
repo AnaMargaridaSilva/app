@@ -1,6 +1,7 @@
 import streamlit as st
 import torch
 from transformers import AutoTokenizer, AutoModelForTokenClassification
+from transformers import RobertaForTokenClassification
 from huggingface_hub import login
 
 hf_token = st.secrets["HUGGINGFACE_TOKEN"]
