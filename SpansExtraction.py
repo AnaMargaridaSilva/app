@@ -1,14 +1,15 @@
 import streamlit as st
 import torch
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, AutoModelForTokenClassification
 
-
-      
 # Load model & tokenizer once (cached for efficiency)
 @st.cache_resource
-def load_model(model_name):
-    tokenizer = AutoTokenizer.from_pretrained("roberta-large")
-    model = ST2ModelV2(args)  # Replace with actual model loading logic
+def load_model():
+    model_name = "anamargarida/Extraction_withseed777"
+    
+    tokenizer = AutoTokenizer.from_pretrained("roberta-large")  
+    
+    model = AutoModelForTokenClassification.from_pretrained(model_name)
     model.eval()
     return tokenizer, model
 
@@ -51,8 +52,7 @@ st.write("Enter a sentence, and the model will extract the **cause**, **effect**
 user_input = st.text_area("Enter text:", "Burning fossil fuels causes global warming due to carbon emissions.")
 
 # Load model & tokenizer
-model_name = "your_custom_model"
-tokenizer, model = load_model(model_name)
+tokenizer, model = load_model()
 
 if st.button("Extract Arguments"):
     if user_input:
