@@ -18,7 +18,6 @@ def load_model():
     model.eval()
     return tokenizer, model
 
-tokenizer, model = load_model()
 
 # Function to extract cause, effect, and signal arguments
 def extract_arguments(text, tokenizer, model):
@@ -103,6 +102,8 @@ def extract_arguments(text, tokenizer, model):
 st.title("Causal Argument Extraction")
 st.write("Enter a sentence, and the model will extract the **cause**, **effect**, and **signal**.")
 st.write("Model output keys:", outputs.keys())
+
+"""
 # Text input
 user_input = st.text_area("Enter text:", "Burning fossil fuels causes global warming due to carbon emissions.")
 
@@ -125,4 +126,4 @@ if st.button("Extract Arguments"):
         st.markdown(f"**Extracted Arguments:**<br>{highlighted_text}", unsafe_allow_html=True)
     else:
         st.warning("Please enter some text before extracting.")
-"""
+
