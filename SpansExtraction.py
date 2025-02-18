@@ -4,7 +4,6 @@ from transformers import AutoConfig, AutoModel, AutoTokenizer
 from huggingface_hub import login
 
 
-
 hf_token = st.secrets["HUGGINGFACE_TOKEN"]
 login(token=hf_token)
 
@@ -26,6 +25,8 @@ def extract_arguments(text, tokenizer, model):
     with torch.no_grad():
         outputs = model(**inputs)
 
+    
+    print(outputs.keys())  # See what the model returns
     # Extract start/end logits for each argument type
     start_cause_logits = outputs["start_arg0_logits"]
     end_cause_logits = outputs["end_arg0_logits"]
