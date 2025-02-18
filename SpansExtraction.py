@@ -20,7 +20,7 @@ def load_model():
     
     
     # Instantiate the custom model
-    model = ST2ModelV2(model_name)
+    model = ST2ModelV2(model_name, config)
     
     model.eval()
     return tokenizer, model
