@@ -16,10 +16,10 @@ class ST2ModelV2(nn.Module):
         self.args = args
 
         
-        self.model = AutoModel.from_pretrained(args.model_name_or_path)
+        self.model = AutoModel.from_pretrained(model_name)
         
 
-        classifier_dropout = self.args.dropout
+        classifier_dropout = 0.3
         self.dropout = nn.Dropout(classifier_dropout)
         self.classifier = nn.Linear(self.config.hidden_size, 6)
 
