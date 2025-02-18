@@ -11,7 +11,7 @@ from statistics import mode
 
 
 class ST2ModelV2(nn.Module):
-    def __init__(self, model_name):
+    def __init__(self, model_name, config):
         super(ST2ModelV2, self).__init__()
         
 
