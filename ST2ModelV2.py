@@ -16,7 +16,7 @@ class ST2ModelV2(nn.Module):
         
 
         
-        self.model = AutoModel.from_pretrained(model_name)
+        self.model = AutoModel.from_pretrained(model_name, config = config)
         
 
         classifier_dropout = 0.3
