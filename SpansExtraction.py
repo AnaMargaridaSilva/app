@@ -2,6 +2,9 @@ import streamlit as st
 import torch
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 
+hf_token = st.secrets["HUGGINGFACE_TOKEN"]
+login(token=hf_token)
+
 # Load model & tokenizer once (cached for efficiency)
 @st.cache_resource
 def load_model():
