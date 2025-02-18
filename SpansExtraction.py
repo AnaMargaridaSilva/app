@@ -1,8 +1,9 @@
 import streamlit as st
 import torch
-from transformers import AutoTokenizer, AutoModelForTokenClassification
-from transformers import RobertaForTokenClassification
+from transformers import AutoConfig, AutoModel, AutoTokenizer
 from huggingface_hub import login
+
+
 
 hf_token = st.secrets["HUGGINGFACE_TOKEN"]
 login(token=hf_token)
@@ -11,10 +12,10 @@ login(token=hf_token)
 @st.cache_resource
 def load_model():
     model_name = "anamargarida/Extraction_withseed777"
+    config = AutoConfig.from_pretrained("roberta-large")
+    model = AutoModel.from_pretrained(model_name, config=config)
+    tokenizer = AutoTokenizer.from_pretrained("roberta-large")
     
-    tokenizer = AutoTokenizer.from_pretrained("roberta-large")  
-    
-    model = RobertaForTokenClassification.from_pretrained(model_name)
     model.eval()
     return tokenizer, model
 
