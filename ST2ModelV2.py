@@ -13,7 +13,7 @@ from statistics import mode
 class ST2ModelV2(nn.Module):
     def __init__(self, args):
         super(ST2ModelV2, self).__init__()
-        self.args = args
+        
 
         
         self.model = AutoModel.from_pretrained(model_name)
