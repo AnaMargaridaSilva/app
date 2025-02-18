@@ -53,8 +53,8 @@ def extract_arguments(text, tokenizer, model):
 
 # Streamlit UI
 st.title("Causal Argument Extraction")
-st.write("Enter a sentence, and the model will extract the **cause**, **effect**, and **causal signal**.")
-
+st.write("Enter a sentence, and the model will extract the **cause**, **effect**, and **signal**.")
+st.write("Model output keys:", outputs.keys())
 # Text input
 user_input = st.text_area("Enter text:", "Burning fossil fuels causes global warming due to carbon emissions.")
 
