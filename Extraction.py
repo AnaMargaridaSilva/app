@@ -11,7 +11,7 @@ login(token=hf_token)
 # Load model & tokenizer once (cached for efficiency)
 @st.cache_resource
 def load_model():
-    model_name = "anamargarida/Extraction"  # Example, update if needed
+    model_name = "anamargarida/Extraction_withseed777" # Example, update if needed
     
     # Load the configuration and tokenizer from Hugging Face Hub
     config = AutoConfig.from_pretrained(model_name)
