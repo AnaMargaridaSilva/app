@@ -59,8 +59,8 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     end_cause_logits = outputs["end_arg0_logits"][0]
     start_effect_logits = outputs["start_arg1_logits"][0]
     end_effect_logits = outputs["end_arg1_logits"][0]
-    start_signal_logits = outputs.get("start_sig_logits", None)
-    end_signal_logits = outputs.get("end_sig_logits", None)
+    start_signal_logits = outputs["sart_sig_logits"][0]
+    end_signal_logits = outputs["end_sig_logits"][0]
 
     #st.write("start_cause_logits", start_cause_logits)
     #st.write("end_cause_logits", end_cause_logits)
@@ -80,12 +80,12 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     start_effect_logits[len(inputs["input_ids"][0]) - 1] = -1e-4
     end_effect_logits[len(inputs["input_ids"][0]) - 1] = -1e-4
 
-    st.write("start_cause_logits", start_cause_logits)
-    st.write("end_cause_logits", end_cause_logits)
-    st.write("start_effect_logits", start_effect_logits)
-    st.write("end_effect_logits", end_effect_logits)
-    st.write("start_signal_logits", start_signal_logits)
-    st.write("end_signal_logits", end_signal_logits)
+    #st.write("start_cause_logits", start_cause_logits)
+    #st.write("end_cause_logits", end_cause_logits)
+    #st.write("start_effect_logits", start_effect_logits)
+    #st.write("end_effect_logits", end_effect_logits)
+    #st.write("start_signal_logits", start_signal_logits)
+    #st.write("end_signal_logits", end_signal_logits)
     
     # Beam Search for position selection
     if beam_search:
@@ -106,17 +106,25 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
 
         start_cause2, end_cause2, start_effect2, end_effect2 = None, None, None, None
 
-    # Signal classification check
-    has_signal = outputs.get("signal_classification_logits", None)
-    if has_signal is not None:
-        has_signal = has_signal[0].argmax().item()  
+    
+    has_signal = 1
+    if args.signal_classification:
+        if not args.pretrained_signal_detector:
+            has_signal = outputs["signal_classification_logits"][i].argmax().item()
+        else:
+            has_signal = signal_detector.predict(text=batch["text"][i])
 
-    start_signal1, end_signal1, start_signal2, end_signal2 = None, None, None, None
-    if has_signal and start_signal_logits is not None and end_signal_logits is not None:
-        start_signal1 = start_signal_logits.argmax().item()
-        end_signal_logits[:start_signal1] = -1e4
-        end_signal_logits[start_signal1 + 5:] = -1e4
-        end_signal1 = end_signal_logits.argmax().item()
+    if has_signal:
+        start_signal_logits[0] = -1e-4
+        end_signal_logits[0] = -1e-4
+    
+        start_signal_logits[len(inputs["input_ids"][0]) - 1] = -1e-4
+        end_signal_logits[len(inputs["input_ids"][0]) - 1] = -1e-4
+       
+        start_signal = start_signal_logits.argmax().item()
+        end_signal_logits[:start_signal] = -1e4
+        end_signal_logits[start_signal + 5:] = -1e4
+        end_signal = end_signal_logits.argmax().item()
 
     tokens = tokenizer.convert_ids_to_tokens(inputs["input_ids"][0])
     token_ids = inputs["input_ids"][0]
@@ -132,12 +140,11 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     cause2 = extract_span(start_cause2, end_cause2)
     effect1 = extract_span(start_effect1, end_effect1)
     effect2 = extract_span(start_effect2, end_effect2)
-    signal1 = extract_span(start_signal1, end_signal1)
-    signal2 = extract_span(start_signal2, end_signal2)
+    signal = extract_span(start_signal, end_signal)
 
-    list1 = [start_cause1, end_cause1, start_effect1, end_effect1, start_signal1, end_signal1]
-    list2 = [start_cause2, end_cause2, start_effect2, end_effect2, start_signal2, end_signal2]
-    return cause1, cause2, effect1, effect2, signal1, signal2, list1, list2
+    list1 = [start_cause1, end_cause1, start_effect1, end_effect1, start_signal, end_signal]
+    list2 = [start_cause2, end_cause2, start_effect2, end_effect2, start_signal, end_signal]
+    return cause1, cause2, effect1, effect2, signal, list1, list2
 
 def mark_text(original_text, span, color):
     """Replace extracted span with a colored background marker."""
@@ -152,16 +159,16 @@ beam_search = st.radio("Enable Beam Search?", ('No', 'Yes')) == 'Yes'
 
 if st.button("Extract1"):
     if input_text:
-        cause1, cause2, effect1, effect2, signal1, signal2, list1, list2 = extract_arguments(input_text, tokenizer, model, beam_search=beam_search)
+        cause1, cause2, effect1, effect2, signal, list1, list2 = extract_arguments(input_text, tokenizer, model, beam_search=beam_search)
 
         cause_text1 = mark_text(input_text, cause1, "#FFD700")  # Gold for cause
         effect_text1 = mark_text(input_text, effect1, "#90EE90")  # Light green for effect
-        signal_text1 = mark_text(input_text, signal1, "#FF6347")  # Tomato red for signal
+        signal_text = mark_text(input_text, signal, "#FF6347")  # Tomato red for signal
 
         st.markdown(f"<span style='font-size: 24px;'><strong>Relation 1:</strong></span>", unsafe_allow_html=True)
         st.markdown(f"**Cause:**<br>{cause_text1}", unsafe_allow_html=True)
         st.markdown(f"**Effect:**<br>{effect_text1}", unsafe_allow_html=True)
-        st.markdown(f"**Signal:**<br>{signal_text1}", unsafe_allow_html=True)
+        st.markdown(f"**Signal:**<br>{signal_text}", unsafe_allow_html=True)
 
         st.write("List 1:", list1)
 
@@ -169,12 +176,12 @@ if st.button("Extract1"):
 
             cause_text2 = mark_text(input_text, cause2, "#FFD700")  # Gold for cause
             effect_text2 = mark_text(input_text, effect2, "#90EE90")  # Light green for effect
-            signal_text2 = mark_text(input_text, signal2, "#FF6347")  # Tomato red for signal
+            signal_text = mark_text(input_text, signal, "#FF6347")  # Tomato red for signal
     
             st.markdown(f"<span style='font-size: 24px;'><strong>Relation 2:</strong></span>", unsafe_allow_html=True)
             st.markdown(f"**Cause:**<br>{cause_text2}", unsafe_allow_html=True)
             st.markdown(f"**Effect:**<br>{effect_text2}", unsafe_allow_html=True)
-            st.markdown(f"**Signal:**<br>{signal_text2}", unsafe_allow_html=True)
+            st.markdown(f"**Signal:**<br>{signal_text}", unsafe_allow_html=True)
 
             st.write("List 2:", list2)
     else:
