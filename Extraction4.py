@@ -24,10 +24,9 @@ def load_model():
         def __init__(self):
             self.model_name = model_name
             self.dropout = 0.1
-            self.signal_classification = False
+            self.signal_classification = True
             self.pretrained_signal_detector = False
         
-
     args = Args()
 
     # Load the model directly from Hugging Face
@@ -63,13 +62,11 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
             end_cause_logits=end_cause_logits,
             start_effect_logits=start_effect_logits,
             end_effect_logits=end_effect_logits,
-            topk=2,
+            topk5,
         )
         start_cause, end_cause, start_effect, end_effect = indices1
     else:
-        # Mask out padding tokens before argmax selection
-        for logits in [start_cause_logits, end_cause_logits, start_effect_logits, end_effect_logits]:
-            logits -= (1 - attention_mask) * 1e4
+        
 
         start_cause = start_cause_logits.argmax().item()
         end_cause = end_cause_logits.argmax().item()
