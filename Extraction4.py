@@ -129,12 +129,12 @@ if st.button("Extract1"):
         effect_text2 = mark_text(input_text, effect2, "#90EE90")  # Light green for effect
         signal_text2 = mark_text(input_text, signal2, "#FF6347")  # Tomato red for signal
 
-        st.markdown(f"**Relation 1:**", unsafe_allow_html=True)
+        st.markdown(f"<span style='font-size: 24px;'><strong>Relation 1:</strong></span>", unsafe_allow_html=True)
         st.markdown(f"**Cause:**<br>{cause_text1}", unsafe_allow_html=True)
         st.markdown(f"**Effect:**<br>{effect_text1}", unsafe_allow_html=True)
         st.markdown(f"**Signal:**<br>{signal_text1}", unsafe_allow_html=True)
 
-        st.markdown(f"**Relation 2:**", unsafe_allow_html=True)
+        st.markdown(f"<span style='font-size: 24px;'><strong>Relation 1:</strong></span>", unsafe_allow_html=True)
         st.markdown(f"**Cause:**<br>{cause_text2}", unsafe_allow_html=True)
         st.markdown(f"**Effect:**<br>{effect_text2}", unsafe_allow_html=True)
         st.markdown(f"**Signal:**<br>{signal_text2}", unsafe_allow_html=True)
