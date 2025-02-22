@@ -40,6 +40,16 @@ tokenizer, model = load_model()
 
 
 def extract_arguments(text, tokenizer, model, beam_search=True):
+
+    class Args:
+        def __init__(self):
+            self.model_name = model_name
+            self.dropout = 0.1
+            self.signal_classification = True
+            self.pretrained_signal_detector = False
+        
+    args = Args()
+
     
     inputs = tokenizer(text, return_tensors="pt")
     
