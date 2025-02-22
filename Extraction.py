@@ -7,15 +7,13 @@ from ST2ModelV2 import ST2ModelV2
 # Load model & tokenizer once (cached for efficiency)
 @st.cache_resource
 def load_model():
-    model_name = "anamargarida/Extraction"  # Example model name, update if needed
+    model_name = "anamargarida/Extraction2"  # Example model name, update if needed
     
     # Load the configuration and tokenizer from Hugging Face Hub
     config = AutoConfig.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     
-    # Load the weights from the safetensors file
-    safetensor_path = "anamargarida/Extraction/model.safetensors"  # Adjust the path to your model
-    state_dict = load_file(safetensor_path)  # Load model weights from safetensors
+
 
     # Pass the necessary args to the model constructor (example: args with dropout)
     args = type('', (), {})()  # Creating a dummy object for args
