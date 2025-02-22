@@ -4,6 +4,7 @@ from safetensors.torch import load_file
 from transformers import AutoConfig, AutoTokenizer, AutoModel
 from ST2ModelV2 import ST2ModelV2
 from huggingface_hub import login
+import re
 
 hf_token = st.secrets["HUGGINGFACE_TOKEN"]
 login(token=hf_token)
@@ -90,6 +91,31 @@ def extract_arguments(text, tokenizer, model):
     return cause, effect, signal
 
 
+
+def highlight_text(original_text, span, color):
+    """Replace the extracted span with a highlighted version in a new sentence."""
+    if span:
+        return re.sub(re.escape(span), f"<span style='color:{color}; font-weight:bold;'>{span}</span>", original_text, flags=re.IGNORECASE)
+    return original_text  # Return unchanged text if no span is found
+
+if st.button("Extract Arguments"):
+    if input_text:
+        cause, effect, signal = extract_arguments(input_text, tokenizer, model)
+
+        # Generate separate sentences for each highlight
+        cause_sentence = highlight_text(input_text, cause, "blue")  # Cause in blue
+        effect_sentence = highlight_text(input_text, effect, "green")  # Effect in green
+        signal_sentence = highlight_text(input_text, signal, "red")  # Signal in red
+
+        # Display sentences separately
+        st.markdown(f"**Cause Highlighted:**<br>{cause_sentence}", unsafe_allow_html=True)
+        st.markdown(f"**Effect Highlighted:**<br>{effect_sentence}", unsafe_allow_html=True)
+        st.markdown(f"**Signal Highlighted:**<br>{signal_sentence}", unsafe_allow_html=True)
+    else:
+        st.warning("Please enter some text before extracting.")
+
+
+"""
 if st.button("Extract Arguments"):
     if input_text:
         cause, effect, signal = extract_arguments(input_text, tokenizer, model)
@@ -106,7 +132,7 @@ if st.button("Extract Arguments"):
         st.markdown(f"**Extracted Arguments:**<br>{highlighted_text}", unsafe_allow_html=True)
     else:
         st.warning("Please enter some text before extracting.")
-
+"""
 
 #if st.button("Extract"):
     #if input_text:
