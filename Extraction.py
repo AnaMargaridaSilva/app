@@ -4,6 +4,9 @@ from safetensors.torch import load_file
 from transformers import AutoConfig, AutoTokenizer
 from ST2ModelV2 import ST2ModelV2
 
+hf_token = st.secrets["HUGGINGFACE_TOKEN"]
+login(token=hf_token)
+
 # Load model & tokenizer once (cached for efficiency)
 @st.cache_resource
 def load_model():
