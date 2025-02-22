@@ -148,7 +148,8 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     cause2 = extract_span(start_cause2, end_cause2)
     effect1 = extract_span(start_effect1, end_effect1)
     effect2 = extract_span(start_effect2, end_effect2)
-    signal = extract_span(start_signal, end_signal)
+    if has_signal:
+        signal = extract_span(start_signal, end_signal)
 
     list1 = [start_cause1, end_cause1, start_effect1, end_effect1, start_signal, end_signal]
     list2 = [start_cause2, end_cause2, start_effect2, end_effect2, start_signal, end_signal]
