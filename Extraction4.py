@@ -24,7 +24,7 @@ def load_model():
         def __init__(self):
             self.model_name = model_name
             self.dropout = 0.1
-            self.signal_classification = True
+            self.signal_classification = False
             self.pretrained_signal_detector = False
         
     args = Args()
@@ -43,7 +43,7 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
      
     class Args:
         def __init__(self):
-            self.signal_classification = True
+            self.signal_classification = False
             self.pretrained_signal_detector = False
         
     args = Args()
@@ -134,12 +134,12 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     tokens = tokenizer.convert_ids_to_tokens(inputs["input_ids"][0])
     token_ids = inputs["input_ids"][0]
 
-    st.write("Token Positions, IDs, and Corresponding Tokens:")
-    for position, (token_id, token) in enumerate(zip(token_ids, tokens)):
-        st.write(f"Position: {position}, ID: {token_id}, Token: {token}")
+    #st.write("Token Positions, IDs, and Corresponding Tokens:")
+    #for position, (token_id, token) in enumerate(zip(token_ids, tokens)):
+        #st.write(f"Position: {position}, ID: {token_id}, Token: {token}")
 
     
-    st.write(f"Start Signal: {start_signal}, End Signal: {end_signal}")
+    #st.write(f"Start Signal: {start_signal}, End Signal: {end_signal}")
 
     def extract_span(start, end):
         return tokenizer.convert_tokens_to_string(tokens[start:end+1]) if start is not None and end is not None else ""
@@ -180,7 +180,7 @@ if st.button("Extract1"):
         st.markdown(f"**Effect:**<br>{effect_text1}", unsafe_allow_html=True)
         st.markdown(f"**Signal:**<br>{signal_text}", unsafe_allow_html=True)
 
-        st.write("List 1:", list1)
+        #st.write("List 1:", list1)
 
         if beam_search:
 
@@ -193,6 +193,6 @@ if st.button("Extract1"):
             st.markdown(f"**Effect:**<br>{effect_text2}", unsafe_allow_html=True)
             st.markdown(f"**Signal:**<br>{signal_text}", unsafe_allow_html=True)
 
-            st.write("List 2:", list2)
+            #st.write("List 2:", list2)
     else:
         st.warning("Please enter some text before extracting.")
