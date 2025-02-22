@@ -43,6 +43,8 @@ tokenizer, model = load_model()
 def extract_arguments(text, tokenizer, model, beam_search=True):
     
     inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True)
+    if inputs is None or "attention_mask" not in inputs:
+        raise ValueError("Tokenizer returned empty inputs. Check the input text.")
     attention_mask = inputs["attention_mask"][0]
 
     with torch.no_grad():
