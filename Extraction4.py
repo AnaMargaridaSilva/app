@@ -46,7 +46,7 @@ tokenizer, model = load_model()
 
 import copy
 
-def extract_arguments(text, tokenizer, model, args):
+def extract_arguments(text, tokenizer, model):
     inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True, return_offsets_mapping=True)
     word_ids = [idx for idx, offset in enumerate(inputs["offset_mapping"][0]) if offset != (0, 0)]
     attention_mask = inputs["attention_mask"][0]
@@ -124,5 +124,5 @@ st.title("Causal Relation Extraction")
 input_text = st.text_area("Enter your text here:", height=300)
 
 if st.button("Extract"):
-    highlighted_text = extract_arguments(input_text, tokenizer, model, args)
+    highlighted_text = extract_arguments(input_text, tokenizer, model)
     st.markdown(f"**Extracted Text:** {highlighted_text}")
