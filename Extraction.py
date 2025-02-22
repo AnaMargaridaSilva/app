@@ -27,7 +27,7 @@ def load_model():
     args.pretrained_signal_detector = False  # Adjust as needed
     
     # Instantiate the custom model
-    model = ST2ModelV2(args)  # Pass the args to the model
+    model = ST2ModelV2(args, config)  # Pass the args to the model
     
     model.eval()  # Set the model to evaluation mode
     return tokenizer, model
