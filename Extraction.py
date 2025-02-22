@@ -1,22 +1,21 @@
-import streamlit as st
 import torch
-from transformers import AutoConfig, AutoModel, AutoTokenizer
-from huggingface_hub import login
-from ST2ModelV2 import ST2ModelV2  # Assuming this is the correct path to your model class
-
-# Login to Hugging Face using the token
-hf_token = st.secrets["HUGGINGFACE_TOKEN"]
-login(token=hf_token)
+from safetensors.torch import load_file
+from transformers import AutoConfig, AutoTokenizer
+from ST2ModelV2 import ST2ModelV2
 
 # Load model & tokenizer once (cached for efficiency)
 @st.cache_resource
 def load_model():
-    model_name = "anamargarida/Extraction_withseed777" # Example, update if needed
+    model_name = "anamargarida/Extraction"  # Example model name, update if needed
     
     # Load the configuration and tokenizer from Hugging Face Hub
     config = AutoConfig.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     
+    # Load the weights from the safetensors file
+    safetensor_path = "path_to_your_model/model.safetensor"  # Adjust the path to your model
+    state_dict = load_file(safetensor_path)  # Load model weights from safetensors
+
     # Pass the necessary args to the model constructor (example: args with dropout)
     args = type('', (), {})()  # Creating a dummy object for args
     args.model_name_or_path = model_name
@@ -26,10 +25,14 @@ def load_model():
     args.signal_classification = False  # Adjust as needed
     args.pretrained_signal_detector = False  # Adjust as needed
     
-    # Instantiate the custom model
-    model = ST2ModelV2(args, config)  # Pass the args to the model
+    # Instantiate the model with config
+    model = ST2ModelV2(args, config)  # Assuming the model accepts the config
     
+    # Load the model weights into your model
+    model.load_state_dict(state_dict)
+
     model.eval()  # Set the model to evaluation mode
+    
     return tokenizer, model
 
 # Load the model and tokenizer
@@ -58,3 +61,6 @@ if st.button("Extract"):
         # Display results
         st.write("Start Arg0 logits:", start_arg0_logits)
         st.write("End Arg0 logits:", end_arg0_logits)
+
+    
+   
