@@ -119,7 +119,7 @@ input_text = st.text_area("Enter your text here:", height=300)
 
 if st.button("Extract1"):
     if input_text:
-        cause1, cause2, effect1, effect2, signal1, signal2 = extract_arguments(input_text, tokenizer, model, beam_search=True)
+        cause1, cause2, effect1, effect2, signal1, signal2 = extract_arguments(input_text, tokenizer, model, beam_search=False)
 
         cause_text1 = mark_text(input_text, cause1, "#FFD700")  # Gold for cause
         effect_text1 = mark_text(input_text, effect1, "#90EE90")  # Light green for effect
@@ -134,7 +134,7 @@ if st.button("Extract1"):
         st.markdown(f"**Effect:**<br>{effect_text1}", unsafe_allow_html=True)
         st.markdown(f"**Signal:**<br>{signal_text1}", unsafe_allow_html=True)
 
-        st.markdown(f"<span style='font-size: 24px;'><strong>Relation 1:</strong></span>", unsafe_allow_html=True)
+        st.markdown(f"<span style='font-size: 24px;'><strong>Relation 2:</strong></span>", unsafe_allow_html=True)
         st.markdown(f"**Cause:**<br>{cause_text2}", unsafe_allow_html=True)
         st.markdown(f"**Effect:**<br>{effect_text2}", unsafe_allow_html=True)
         st.markdown(f"**Signal:**<br>{signal_text2}", unsafe_allow_html=True)
