@@ -11,27 +11,22 @@ from statistics import mode
 from safetensors.torch import load_file
 
 
+
+
 class ST2ModelV2(nn.Module):
     @classmethod
-    def from_pretrained(cls, model_name_or_path, *args, **kwargs):
+    def from_pretrained(cls, model_name_or_path, args=None, **kwargs):
         """
-        Custom from_pretrained method to load model.
+        Custom from_pretrained method to load model from Hugging Face.
         """
-        args = type('', (), {})()  # Create a dummy args object
-        args.model_name_or_path = model_name_or_path
-        
         # Load configuration
         config = AutoConfig.from_pretrained(model_name_or_path)
         
-        # Instantiate and return the model
+        # Instantiate the model
         model = cls(args, config)
 
-        # Check if safetensors file exists
-        safetensors_path = f"{model_name_or_path}/model.safetensors"
-        if os.path.exists(safetensors_path):
-            model.load_state_dict(torch.load(safetensors_path))
-        else:
-            model.load_state_dict(torch.load(f"{model_name_or_path}/pytorch_model.bin"))
+        # Load pre-trained weights from Hugging Face
+        model.model = AutoModel.from_pretrained(model_name_or_path, config=config)
 
         return model
         
@@ -40,11 +35,10 @@ class ST2ModelV2(nn.Module):
         self.args = args
         self.config = config
 
-        # Ensure hidden_size is defined
+        # Ensure hidden_size exists
         hidden_size = getattr(config, "hidden_size", 768)
-        
-        self.model = AutoModel.from_pretrained(args.model_name_or_path, config=config)
-        
+
+        # Define classifier layers
         classifier_dropout = 0.3
         self.dropout = nn.Dropout(classifier_dropout)
         self.classifier = nn.Linear(hidden_size, 6)
@@ -61,9 +55,7 @@ class ST2ModelV2(nn.Module):
         if args.add_signal_bias:
             self.signal_phrases_layer = nn.Parameter(
                 torch.normal(
-                    mean=self.model.embeddings.word_embeddings.weight.data.mean(), 
-                    std=self.model.embeddings.word_embeddings.weight.data.std(),
-                    size=(1, hidden_size),
+                    mean=0.0, std=1.0, size=(1, hidden_size)
                 )
             )
         
@@ -72,18 +64,18 @@ class ST2ModelV2(nn.Module):
 
     def forward(
         self,
-        input_ids: torch.Tensor = None,
-        attention_mask: torch.Tensor = None,
-        token_type_ids: torch.Tensor = None,
-        position_ids: torch.Tensor = None,
-        signal_bias_mask: torch.Tensor = None,
-        head_mask: torch.Tensor = None,
-        inputs_embeds: torch.Tensor = None,
-        start_positions: torch.Tensor = None,
-        end_positions: torch.Tensor = None,
-        output_attentions: bool = None,
-        output_hidden_states: bool = None,
-        return_dict: bool = None,
+        input_ids=None,
+        attention_mask=None,
+        token_type_ids=None,
+        position_ids=None,
+        signal_bias_mask=None,
+        head_mask=None,
+        inputs_embeds=None,
+        start_positions=None,
+        end_positions=None,
+        output_attentions=None,
+        output_hidden_states=None,
+        return_dict=None,
     ):
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         
@@ -107,7 +99,7 @@ class ST2ModelV2(nn.Module):
         sequence_output = self.dropout(sequence_output)
         logits = self.classifier(sequence_output)
 
-        # Split logits for different parts of the prediction
+        # Split logits for different tasks
         start_arg0_logits, end_arg0_logits, start_arg1_logits, end_arg1_logits, start_sig_logits, end_sig_logits = logits.split(1, dim=-1)
         start_arg0_logits = start_arg0_logits.squeeze(-1)
         end_arg0_logits = end_arg0_logits.squeeze(-1)
@@ -154,3 +146,4 @@ class ST2ModelV2(nn.Module):
             'signal_classification_logits': signal_classification_logits,
             'loss': total_loss,
         }
+
