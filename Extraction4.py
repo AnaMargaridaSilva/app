@@ -105,10 +105,9 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     tokens = tokenizer.convert_ids_to_tokens(inputs["input_ids"][0])
     token_ids = inputs["input_ids"][0]
 
-    # Display token IDs and their corresponding tokens
-    st.write("Token IDs and Corresponding Tokens:")
-    for token_id, token in zip(token_ids, tokens):
-        st.write(f"ID: {token_id}, Token: {token}")
+    st.write("Token Positions, IDs, and Corresponding Tokens:")
+    for position, (token_id, token) in enumerate(zip(token_ids, tokens)):
+        st.write(f"Position: {position}, ID: {token_id}, Token: {token}")
 
     def extract_span(start, end):
         return tokenizer.convert_tokens_to_string(tokens[start:end+1]) if start is not None and end is not None else ""
