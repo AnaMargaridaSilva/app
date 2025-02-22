@@ -50,7 +50,7 @@ import streamlit as st
 import torch
 import copy
 
-def extract_arguments(text, tokenizer, model, args):
+def extract_arguments(text, tokenizer, model):
     inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True)
     attention_mask = inputs["attention_mask"][0]
 
