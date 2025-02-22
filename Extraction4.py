@@ -5,6 +5,7 @@ from transformers import AutoConfig, AutoTokenizer, AutoModel
 from ST2ModelV2 import ST2ModelV2
 from huggingface_hub import login
 import re
+import copy
 
 hf_token = st.secrets["HUGGINGFACE_TOKEN"]
 login(token=hf_token)
@@ -39,16 +40,6 @@ def load_model():
 tokenizer, model = load_model()
 
 
-
-
-
-
-import copy
-
-import streamlit as st
-import torch
-import copy
-
 def extract_arguments(text, tokenizer, model, beam_search=True):
     
     inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True)
@@ -67,7 +58,7 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
 
     # Beam Search for position selection
     if beam_search:
-        indices1, indices2, _, _, _ = model.beam_search_position_selector(
+        indices1, indices2, _, _, _ = ST2ModelV2.beam_search_position_selector(
             start_cause_logits=start_cause_logits,
             end_cause_logits=end_cause_logits,
             start_effect_logits=start_effect_logits,
