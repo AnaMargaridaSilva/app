@@ -134,7 +134,7 @@ if st.button("Extract1"):
         st.markdown(f"**Effect:**<br>{effect_text1}", unsafe_allow_html=True)
         st.markdown(f"**Signal:**<br>{signal_text1}", unsafe_allow_html=True)
 
-        print(list1)
+        st.write("List 1:", list1)
 
         if beam_search:
 
@@ -147,6 +147,6 @@ if st.button("Extract1"):
             st.markdown(f"**Effect:**<br>{effect_text2}", unsafe_allow_html=True)
             st.markdown(f"**Signal:**<br>{signal_text2}", unsafe_allow_html=True)
 
-            print(list2)
+            st.write("List 2:", list2)
     else:
         st.warning("Please enter some text before extracting.")
