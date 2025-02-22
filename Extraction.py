@@ -3,6 +3,7 @@ import torch
 from safetensors.torch import load_file
 from transformers import AutoConfig, AutoTokenizer
 from ST2ModelV2 import ST2ModelV2
+from huggingface_hub import login
 
 hf_token = st.secrets["HUGGINGFACE_TOKEN"]
 login(token=hf_token)
