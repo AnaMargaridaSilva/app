@@ -14,7 +14,7 @@ def load_model():
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     
     # Load the weights from the safetensors file
-    safetensor_path = "path_to_your_model/model.safetensor"  # Adjust the path to your model
+    safetensor_path = "anamargarida/Extraction/model.safetensor"  # Adjust the path to your model
     state_dict = load_file(safetensor_path)  # Load model weights from safetensors
 
     # Pass the necessary args to the model constructor (example: args with dropout)
