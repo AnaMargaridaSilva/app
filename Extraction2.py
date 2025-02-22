@@ -51,8 +51,8 @@ def extract_arguments(text, tokenizer, model):
         outputs = model(**inputs)
         
     # Debugging: Check what the model returns
-    st.write("Model Output:", outputs)  # Full output to examine
-    st.write("Model output keys:", outputs.keys())  # Check available keys
+    # st.write("Model Output:", outputs)  # Full output to examine
+    # st.write("Model output keys:", outputs.keys())  # Check available keys
 
     # Extract start/end logits for each argument type
     start_cause_logits = outputs.get("start_arg0_logits", None)
@@ -62,11 +62,14 @@ def extract_arguments(text, tokenizer, model):
     start_signal_logits = outputs.get("start_sig_logits", None)
     end_signal_logits = outputs.get("end_sig_logits", None)
 
+    """
     if start_cause_logits is not None:
         st.write("Start Cause Logits Shape:", start_cause_logits.shape)
     if end_cause_logits is not None:
         st.write("End Cause Logits Shape:", end_cause_logits.shape)
 
+    """
+    
     # Get start/end token indices
     start_cause = start_cause_logits.argmax().item() if start_cause_logits is not None else None
     end_cause = end_cause_logits.argmax().item() if end_cause_logits is not None else None
