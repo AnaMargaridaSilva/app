@@ -62,6 +62,14 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     start_signal_logits = outputs.get("start_sig_logits", None)
     end_signal_logits = outputs.get("end_sig_logits", None)
 
+    st.write("start_cause_logits", start_cause_logits)
+    st.write("end_cause_logits", end_cause_logits)
+    st.write("start_effect_logits", start_effect_logitss)
+    st.write("end_effect_logits", end_effect_logits)
+    st.write("start_signal_logits", start_signal_logits)
+    st.write("end_signal_logits", end_signal_logits)
+
+
     # Set the first and last token logits to a very low value to ignore them
     start_cause_logits[0] = -1e-4
     end_cause_logits[0] = -1e-4
