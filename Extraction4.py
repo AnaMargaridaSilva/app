@@ -49,7 +49,7 @@ import streamlit as st
 import torch
 import copy
 
-def extract_arguments(text, tokenizer, model, beam_search):
+def extract_arguments(text, tokenizer, model, beam_search=True):
     
     inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True)
     attention_mask = inputs["attention_mask"][0]
@@ -121,7 +121,7 @@ input_text = st.text_area("Enter your text here:", height=300)
 
 if st.button("Extract1"):
     if input_text:
-        cause, effect, signal = extract_arguments(input_text, tokenizer, model, beam_search)
+        cause, effect, signal = extract_arguments(input_text, tokenizer, model, beam_search=True)
 
         cause_text = mark_text(input_text, cause, "#FFD700")  # Gold for cause
         effect_text = mark_text(input_text, effect, "#90EE90")  # Light green for effect
