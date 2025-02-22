@@ -116,10 +116,11 @@ def mark_text(original_text, span, color):
 
 st.title("Causal Relation Extraction")
 input_text = st.text_area("Enter your text here:", height=300)
+beam_search = False 
 
 if st.button("Extract1"):
     if input_text:
-        cause1, cause2, effect1, effect2, signal1, signal2 = extract_arguments(input_text, tokenizer, model, beam_search=False)
+        cause1, cause2, effect1, effect2, signal1, signal2 = extract_arguments(input_text, tokenizer, model, beam_search=beam_search)
 
         cause_text1 = mark_text(input_text, cause1, "#FFD700")  # Gold for cause
         effect_text1 = mark_text(input_text, effect1, "#90EE90")  # Light green for effect
