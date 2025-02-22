@@ -12,6 +12,31 @@ from safetensors.torch import load_file
 
 
 class ST2ModelV2(nn.Module):
+    @classmethod
+    def from_pretrained(cls, model_name_or_path, *args, **kwargs):
+        """
+        Custom from_pretrained method to load model.
+        """
+        # Create an args object, you can customize it as needed
+        args = type('', (), {})()  # creating a dummy object for args
+        args.model_name_or_path = model_name_or_path
+        
+        # Load configuration and tokenizer
+        config = AutoConfig.from_pretrained(model_name_or_path)
+        
+        # Instantiate and return the model
+        model = cls(args, config)
+        # Check if safetensors file exists
+        safetensors_path = f"{model_name_or_path}/model.safetensors"
+        if os.path.exists(safetensors_path):
+            # Load model from safetensors
+            model.load_state_dict(load_file(safetensors_path))
+        else:
+            # Fallback to regular pytorch model loading (if needed)
+            model.load_state_dict(torch.load(f"{model_name_or_path}/pytorch_model.bin"))
+        
+        return model
+        
     def __init__(self, model_name, config):
         super(ST2ModelV2, self).__init__()
         
@@ -199,27 +224,4 @@ class ST2ModelV2(nn.Module):
             'loss': total_loss,
         }
 
-    @classmethod
-    def from_pretrained(cls, model_name_or_path, *args, **kwargs):
-        """
-        Custom from_pretrained method to load model.
-        """
-        # Create an args object, you can customize it as needed
-        args = type('', (), {})()  # creating a dummy object for args
-        args.model_name_or_path = model_name_or_path
-        
-        # Load configuration and tokenizer
-        config = AutoConfig.from_pretrained(model_name_or_path)
-        
-        # Instantiate and return the model
-        model = cls(args, config)
-        # Check if safetensors file exists
-        safetensors_path = f"{model_name_or_path}/model.safetensors"
-        if os.path.exists(safetensors_path):
-            # Load model from safetensors
-            model.load_state_dict(load_file(safetensors_path))
-        else:
-            # Fallback to regular pytorch model loading (if needed)
-            model.load_state_dict(torch.load(f"{model_name_or_path}/pytorch_model.bin"))
-        
-        return model
+    
