@@ -120,7 +120,7 @@ def mark_text(original_text, span, color):
         return re.sub(re.escape(span), f"<mark style='background-color:{color}; padding:2px; border-radius:4px;'>{span}</mark>", original_text, flags=re.IGNORECASE)
     return original_text  # Return unchanged text if no span is found
 
-if st.button("Extract"):
+if st.button("Extract1"):
     if input_text:
         cause, effect, signal = extract_arguments(input_text, tokenizer, model)
 
