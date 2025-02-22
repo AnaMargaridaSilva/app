@@ -119,6 +119,15 @@ def extract_arguments(text, tokenizer, model, args):
 st.title("Causal Relation Extraction")
 input_text = st.text_area("Enter your text here:", height=300)
 
-if st.button("Extract"):
-    highlighted_text = extract_arguments(input_text, tokenizer, model)
-    st.markdown(f"**Extracted Text:** {highlighted_text}")
+if st.button("Extract1"):
+    if input_text:
+        cause, effect, signal = extract_arguments(input_text, tokenizer, model)
+
+        cause_text = mark_text(input_text, cause, "#FFD700")  # Gold for cause
+        effect_text = mark_text(input_text, effect, "#90EE90")  # Light green for effect
+        signal_text = mark_text(input_text, signal, "#FF6347")  # Tomato red for signal
+
+        st.markdown(f"**Cause Marked:**<br>{cause_text}", unsafe_allow_html=True)
+        st.markdown(f"**Effect Marked:**<br>{effect_text}", unsafe_allow_html=True)
+        st.markdown(f"**Signal Marked:**<br>{signal_text}", unsafe_allow_html=True)
+
