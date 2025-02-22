@@ -133,6 +133,9 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     for position, (token_id, token) in enumerate(zip(token_ids, tokens)):
         st.write(f"Position: {position}, ID: {token_id}, Token: {token}")
 
+    
+    st.write(f"Start Signal: {start_signal}, End Signal: {end_signal}")
+
     def extract_span(start, end):
         return tokenizer.convert_tokens_to_string(tokens[start:end+1]) if start is not None and end is not None else ""
 
