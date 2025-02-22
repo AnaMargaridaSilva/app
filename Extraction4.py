@@ -47,13 +47,15 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
             self.pretrained_signal_detector = False
         
     args = Args()
-
-    
     inputs = tokenizer(text, return_tensors="pt")
     
+    input_ids = inputs["input_ids"]
 
+    input_ids[0] = -1e-4
+    input_ids[-1] = -1e-4
+    
     with torch.no_grad():
-        outputs = model(**inputs)
+        outputs = model(input_ids=input_ids)
 
     # Extract logits
     start_cause_logits = outputs["start_arg0_logits"][0]
