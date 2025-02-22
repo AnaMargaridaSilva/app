@@ -21,7 +21,7 @@ def load_model():
     
     class Args:
         def __init__(self):
-            self.model_name_or_path = model_name
+            self.model_name = model_name
             self.dropout = 0.1
             self.signal_classification = False
             self.pretrained_signal_detector = False
