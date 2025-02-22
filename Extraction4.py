@@ -66,11 +66,10 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     end_cause_logits[0] = -1e-4
     start_effect_logits[0] = -1e-4
     end_effect_logits[0] = -1e-4
-
-    start_cause_logits[len(inputs) - 1] = -1e-4
-    end_cause_logits[len(inputs) - 1]  = -1e-4
-    start_effect_logits[len(inputs) - 1]  = -1e-4
-    end_effect_logits[len(inputs) - 1]  = -1e-4
+    start_cause_logits[len(inputs["input_ids"][0]) - 1] = -1e-4
+    end_cause_logits[len(inputs["input_ids"][0]) - 1] = -1e-4
+    start_effect_logits[len(inputs["input_ids"][0]) - 1] = -1e-4
+    end_effect_logits[len(inputs["input_ids"][0]) - 1] = -1e-4
     
     # Beam Search for position selection
     if beam_search:
@@ -104,6 +103,12 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
         end_signal1 = end_signal_logits.argmax().item()
 
     tokens = tokenizer.convert_ids_to_tokens(inputs["input_ids"][0])
+    token_ids = inputs["input_ids"][0]
+
+    # Display token IDs and their corresponding tokens
+    st.write("Token IDs and Corresponding Tokens:")
+    for token_id, token in zip(token_ids, tokens):
+        st.write(f"ID: {token_id}, Token: {token}")
 
     def extract_span(start, end):
         return tokenizer.convert_tokens_to_string(tokens[start:end+1]) if start is not None and end is not None else ""
