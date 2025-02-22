@@ -58,7 +58,7 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
 
     # Beam Search for position selection
     if beam_search:
-        indices1, indices2, _, _, _ = ST2ModelV2.beam_search_position_selector(
+        indices1, indices2, _, _, _ = model.beam_search_position_selector(
             start_cause_logits=start_cause_logits,
             end_cause_logits=end_cause_logits,
             start_effect_logits=start_effect_logits,
