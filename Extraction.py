@@ -11,17 +11,17 @@ login(token=hf_token)
 # Load model & tokenizer once (cached for efficiency)
 @st.cache_resource
 def load_model():
-    model_name = "anamargarida/Extraction2"  # Update if needed
+    model_name = "anamargarida/Extraction2"  # Update with your actual model name
     
     # Load the configuration and tokenizer from Hugging Face Hub
     config = AutoConfig.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-    # Create an args object with necessary parameters
+    # Define arguments as needed
     class Args:
         def __init__(self):
             self.model_name_or_path = model_name
-            self.dropout = 0.1  # Example dropout value
+            self.dropout = 0.1
             self.mlp = False
             self.add_signal_bias = False
             self.signal_classification = False
@@ -29,16 +29,8 @@ def load_model():
 
     args = Args()
 
-    # Instantiate the model with config
-    model = ST2ModelV2(args, config)
-
-    # Load model weights
-    model_path = "path_to_model_weights.pth"  # Update this path
-    if os.path.exists(model_path):
-        state_dict = torch.load(model_path, map_location=torch.device("cpu"))
-        model.load_state_dict(state_dict)
-    else:
-        raise FileNotFoundError(f"Model weights not found at {model_path}")
+    # Load the model directly from Hugging Face
+    model = ST2ModelV2.from_pretrained(model_name, args=args)
 
     model.eval()  # Set model to evaluation mode
     return tokenizer, model
