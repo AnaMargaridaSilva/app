@@ -106,7 +106,9 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     signal1 = extract_span(start_signal1, end_signal1)
     signal2 = extract_span(start_signal2, end_signal2)
 
-    return cause1, cause2, effect1, effect2, signal1, signal2
+    list1 = [start_cause1, end_cause1, start_effect1, end_effect1, start_signal1, end_signal1]
+    list2 = [start_cause2, end_cause2, start_effect2, end_effect2, start_signal2, end_signal2]
+    return cause1, cause2, effect1, effect2, signal1, signal2, list1, list2
 
 def mark_text(original_text, span, color):
     """Replace extracted span with a colored background marker."""
@@ -121,7 +123,7 @@ beam_search = st.radio("Enable Beam Search?", ('No', 'Yes')) == 'Yes'
 
 if st.button("Extract1"):
     if input_text:
-        cause1, cause2, effect1, effect2, signal1, signal2 = extract_arguments(input_text, tokenizer, model, beam_search=beam_search)
+        cause1, cause2, effect1, effect2, signal1, signal2, list1, list2 = extract_arguments(input_text, tokenizer, model, beam_search=beam_search)
 
         cause_text1 = mark_text(input_text, cause1, "#FFD700")  # Gold for cause
         effect_text1 = mark_text(input_text, effect1, "#90EE90")  # Light green for effect
@@ -131,6 +133,8 @@ if st.button("Extract1"):
         st.markdown(f"**Cause:**<br>{cause_text1}", unsafe_allow_html=True)
         st.markdown(f"**Effect:**<br>{effect_text1}", unsafe_allow_html=True)
         st.markdown(f"**Signal:**<br>{signal_text1}", unsafe_allow_html=True)
+
+        print(list1)
 
         if beam_search:
 
@@ -142,5 +146,7 @@ if st.button("Extract1"):
             st.markdown(f"**Cause:**<br>{cause_text2}", unsafe_allow_html=True)
             st.markdown(f"**Effect:**<br>{effect_text2}", unsafe_allow_html=True)
             st.markdown(f"**Signal:**<br>{signal_text2}", unsafe_allow_html=True)
+
+            print(list2)
     else:
         st.warning("Please enter some text before extracting.")
