@@ -106,27 +106,17 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     return (cause1, cause2), (effect1, effect2), (signal1, signal2)
 
 def mark_text(original_text, spans, color):
-    """Highlight both extracted spans in different shades of the given color."""
-    if not any(spans): 
-        return original_text  
-
+    """Highlight each extracted span in separate sentences."""
+    highlighted_text = ""
     span1, span2 = spans
-    highlighted_text = original_text
 
+    # Highlight span1 in the first sentence
     if span1:
-        highlighted_text = re.sub(
-            re.escape(span1),
-            f"<mark style='background-color:{color}; padding:2px; border-radius:4px;'>{span1}</mark>",
-            highlighted_text,
-            flags=re.IGNORECASE
-        )
+        highlighted_text += f"<p><strong>Result 1:</strong><br><mark style='background-color:{color}; padding:2px; border-radius:4px;'>{span1}</mark></p>"
+
+    # Highlight span2 in the second sentence
     if span2 and span2 != span1:
-        highlighted_text = re.sub(
-            re.escape(span2),
-            f"<mark style='background-color:{color}; opacity:0.7; padding:2px; border-radius:4px;'>{span2}</mark>",
-            highlighted_text,
-            flags=re.IGNORECASE
-        )
+        highlighted_text += f"<p><strong>Result 2:</strong><br><mark style='background-color:{color}; opacity:0.7; padding:2px; border-radius:4px;'>{span2}</mark></p>"
 
     return highlighted_text
 
@@ -137,10 +127,11 @@ if st.button("Extract1"):
     if input_text:
         cause_spans, effect_spans, signal_spans = extract_arguments(input_text, tokenizer, model, beam_search=True)
 
+        # For each span type, mark the text and create separate sentences
         cause_text = mark_text(input_text, cause_spans, "#FFD700")  
         effect_text = mark_text(input_text, effect_spans, "#90EE90")  
         signal_text = mark_text(input_text, signal_spans, "#FF6347")  
 
-        st.markdown(f"**Cause Marked:**<br>{cause_text}", unsafe_allow_html=True)
-        st.markdown(f"**Effect Marked:**<br>{effect_text}", unsafe_allow_html=True)
-        st.markdown(f"**Signal Marked:**<br>{signal_text}", unsafe_allow_html=True)
+        st.markdown(f"**Cause Extraction Results:**<br>{cause_text}", unsafe_allow_html=True)
+        st.markdown(f"**Effect Extraction Results:**<br>{effect_text}", unsafe_allow_html=True)
+        st.markdown(f"**Signal Extraction Results:**<br>{signal_text}", unsafe_allow_html=True)
