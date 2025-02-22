@@ -39,7 +39,7 @@ def load_model():
 tokenizer, model = load_model()
 
 # Now you can use the model to predict text input from the user
-st.title("Text Extraction Model")
+st.title("Causal Relation Extraction")
 
 input_text = st.text_area("Enter your text here:", height=300)
 
