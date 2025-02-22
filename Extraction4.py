@@ -107,7 +107,11 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
 
     return cause, effect, signal
 
-
+def mark_text(original_text, span, color):
+    """Replace extracted span with a colored background marker."""
+    if span:
+        return re.sub(re.escape(span), f"<mark style='background-color:{color}; padding:2px; border-radius:4px;'>{span}</mark>", original_text, flags=re.IGNORECASE)
+    return original_text  # Return unchanged text if no span is found
 
 
 st.title("Causal Relation Extraction")
