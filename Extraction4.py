@@ -127,8 +127,8 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
         end_signal = end_signal_logits.argmax().item()
 
     if not has_signal:
-        start_signal = 'NULL'
-        end_signal = 'NULL'
+        start_signal = 'NA'
+        end_signal = 'NA'
         
 
     tokens = tokenizer.convert_ids_to_tokens(inputs["input_ids"][0])
@@ -150,7 +150,8 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     effect2 = extract_span(start_effect2, end_effect2)
     if has_signal:
         signal = extract_span(start_signal, end_signal)
-
+    if not has_signal:
+        signal = NA
     list1 = [start_cause1, end_cause1, start_effect1, end_effect1, start_signal, end_signal]
     list2 = [start_cause2, end_cause2, start_effect2, end_effect2, start_signal, end_signal]
     return cause1, cause2, effect1, effect2, signal, list1, list2
