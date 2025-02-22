@@ -25,8 +25,7 @@ def load_model():
             self.dropout = 0.1
             self.signal_classification = False
             self.pretrained_signal_detector = False
-            self.beam_search = True  # Enable beam search
-            self.topk = 2
+        
 
     args = Args()
 
@@ -50,7 +49,8 @@ import streamlit as st
 import torch
 import copy
 
-def extract_arguments(text, tokenizer, model):
+def extract_arguments(text, tokenizer, model, beam_search):
+    
     inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True)
     attention_mask = inputs["attention_mask"][0]
 
@@ -66,7 +66,7 @@ def extract_arguments(text, tokenizer, model):
     end_signal_logits = outputs.get("end_sig_logits", None)
 
     # Beam Search for position selection
-    if args.beam_search:
+    if beam_search:
         indices1, indices2, _, _, _ = model.beam_search_position_selector(
             start_cause_logits=start_cause_logits,
             end_cause_logits=end_cause_logits,
@@ -74,7 +74,7 @@ def extract_arguments(text, tokenizer, model):
             end_effect_logits=end_effect_logits,
             attention_mask=attention_mask,
             word_ids=None,  # No offsets needed
-            topk=args.topk,
+            topk=2,
         )
         start_cause, end_cause, start_effect, end_effect = indices1
     else:
@@ -121,7 +121,7 @@ input_text = st.text_area("Enter your text here:", height=300)
 
 if st.button("Extract1"):
     if input_text:
-        cause, effect, signal = extract_arguments(input_text, tokenizer, model)
+        cause, effect, signal = extract_arguments(input_text, tokenizer, model, beam_search)
 
         cause_text = mark_text(input_text, cause, "#FFD700")  # Gold for cause
         effect_text = mark_text(input_text, effect, "#90EE90")  # Light green for effect
