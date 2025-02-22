@@ -94,7 +94,7 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
         end_signal_logits[start_signal1 + 5:] = -1e4
         end_signal1 = end_signal_logits.argmax().item()
 
-    tokens = tokenizer.convert_ids_to_tokens(inputs["input_ids"][0])
+     tokens = tokenizer.convert_ids_to_tokens(inputs["input_ids"][0])
 
     def extract_span(start, end):
         return tokenizer.convert_tokens_to_string(tokens[start:end+1]) if start is not None and end is not None else ""
@@ -105,10 +105,28 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
 
     return (cause1, cause2), (effect1, effect2), (signal1, signal2)
 
-def mark_text(cause_spans, effect_spans, signal_spans):
-    """Format the output in the desired structure for Result1 and Result2."""
-    result1 = f"<p><strong>Result 1:</strong><br>Cause: {cause_spans[0]}<br>Effect: {effect_spans[0]}<br>Signal: {signal_spans[0]}</p>"
-    result2 = f"<p><strong>Result 2:</strong><br>Cause: {cause_spans[1]}<br>Effect: {effect_spans[1]}<br>Signal: {signal_spans[1]}</p>"
+def mark_text(original_text, cause_spans, effect_spans, signal_spans):
+    """Replace extracted span with a colored background marker."""
+    def highlight(span, color):
+        return f"<mark style='background-color:{color}; padding:2px; border-radius:4px;'>{span}</mark>"
+
+    cause1, cause2 = cause_spans
+    effect1, effect2 = effect_spans
+    signal1, signal2 = signal_spans
+
+    # Mark up the cause, effect, and signal for both Result 1 and Result 2
+    result1_text = original_text
+    result1_text = result1_text.replace(cause1, highlight(cause1, "#FFD700"))  # Gold for cause
+    result1_text = result1_text.replace(effect1, highlight(effect1, "#90EE90"))  # Light green for effect
+    result1_text = result1_text.replace(signal1, highlight(signal1, "#FF6347"))  # Tomato red for signal
+
+    result2_text = original_text
+    result2_text = result2_text.replace(cause2, highlight(cause2, "#FFD700"))
+    result2_text = result2_text.replace(effect2, highlight(effect2, "#90EE90"))
+    result2_text = result2_text.replace(signal2, highlight(signal2, "#FF6347"))
+
+    result1 = f"<p><strong>Result 1:</strong><br>{result1_text}</p>"
+    result2 = f"<p><strong>Result 2:</strong><br>{result2_text}</p>"
 
     return result1 + result2
 
@@ -119,8 +137,8 @@ if st.button("Extract1"):
     if input_text:
         cause_spans, effect_spans, signal_spans = extract_arguments(input_text, tokenizer, model, beam_search=True)
 
-        # Format the extracted spans into the desired result structure
-        formatted_result = mark_text(cause_spans, effect_spans, signal_spans)
+        # Format and highlight the extracted spans in the original text
+        highlighted_result = mark_text(input_text, cause_spans, effect_spans, signal_spans)
 
-        # Display the formatted result with separate cause, effect, and signal for each result
-        st.markdown(f"{formatted_result}", unsafe_allow_html=True)
+        # Display the highlighted result with separate cause, effect, and signal for each result
+        st.markdown(f"{highlighted_result}", unsafe_allow_html=True)
