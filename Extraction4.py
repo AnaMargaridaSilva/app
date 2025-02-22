@@ -72,60 +72,75 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
             end_effect_logits=end_effect_logits,
             topk=5
         )
-        start_cause, end_cause, start_effect, end_effect = indices1
+        start_cause1, end_cause1, start_effect1, end_effect1 = indices1
+        start_cause2, end_cause2, start_effect2, end_effect2 = indices2
     else:
-        
+        start_cause1 = start_cause_logits.argmax().item()
+        end_cause1 = end_cause_logits.argmax().item()
+        start_effect1 = start_effect_logits.argmax().item()
+        end_effect1 = end_effect_logits.argmax().item()
 
-        start_cause = start_cause_logits.argmax().item()
-        end_cause = end_cause_logits.argmax().item()
-        start_effect = start_effect_logits.argmax().item()
-        end_effect = end_effect_logits.argmax().item()
+        start_cause2, end_cause2, start_effect2, end_effect2 = None, None, None, None
 
     # Signal classification check
-    has_signal = True  # Default to True
-    if args.signal_classification:
-        if not args.pretrained_signal_detector:
-            has_signal = outputs["signal_classification_logits"][0].argmax().item()
-        else:
-            has_signal = signal_detector.predict(text=text)  # External detector
+    has_signal = outputs.get("signal_classification_logits", None)
+    if has_signal is not None:
+        has_signal = has_signal[0].argmax().item()  
 
-    # Handle signal start/end indices
+    start_signal1, end_signal1, start_signal2, end_signal2 = None, None, None, None
     if has_signal and start_signal_logits is not None and end_signal_logits is not None:
-        start_signal = start_signal_logits.argmax().item()
-        end_signal_logits[:start_signal] = -1e4
-        end_signal_logits[start_signal + 5:] = -1e4
-        end_signal = end_signal_logits.argmax().item()
-    else:
-        start_signal, end_signal = None, None
+        start_signal1 = start_signal_logits.argmax().item()
+        end_signal_logits[:start_signal1] = -1e4
+        end_signal_logits[start_signal1 + 5:] = -1e4
+        end_signal1 = end_signal_logits.argmax().item()
 
-    # Convert token indices to words
     tokens = tokenizer.convert_ids_to_tokens(inputs["input_ids"][0])
-    
-    cause = tokenizer.convert_tokens_to_string(tokens[start_cause:end_cause+1]) if start_cause is not None and end_cause is not None else ""
-    effect = tokenizer.convert_tokens_to_string(tokens[start_effect:end_effect+1]) if start_effect is not None and end_effect is not None else ""
-    signal = tokenizer.convert_tokens_to_string(tokens[start_signal:end_signal+1]) if start_signal is not None and end_signal is not None else ""
 
-    return cause, effect, signal
+    def extract_span(start, end):
+        return tokenizer.convert_tokens_to_string(tokens[start:end+1]) if start is not None and end is not None else ""
 
-def mark_text(original_text, span, color):
-    """Replace extracted span with a colored background marker."""
-    if span:
-        return re.sub(re.escape(span), f"<mark style='background-color:{color}; padding:2px; border-radius:4px;'>{span}</mark>", original_text, flags=re.IGNORECASE)
-    return original_text  # Return unchanged text if no span is found
+    cause1, cause2 = extract_span(start_cause1, end_cause1), extract_span(start_cause2, end_cause2)
+    effect1, effect2 = extract_span(start_effect1, end_effect1), extract_span(start_effect2, end_effect2)
+    signal1, signal2 = extract_span(start_signal1, end_signal1), extract_span(start_signal2, end_signal2)
 
+    return (cause1, cause2), (effect1, effect2), (signal1, signal2)
+
+def mark_text(original_text, spans, color):
+    """Highlight both extracted spans in different shades of the given color."""
+    if not any(spans): 
+        return original_text  
+
+    span1, span2 = spans
+    highlighted_text = original_text
+
+    if span1:
+        highlighted_text = re.sub(
+            re.escape(span1),
+            f"<mark style='background-color:{color}; padding:2px; border-radius:4px;'>{span1}</mark>",
+            highlighted_text,
+            flags=re.IGNORECASE
+        )
+    if span2 and span2 != span1:
+        highlighted_text = re.sub(
+            re.escape(span2),
+            f"<mark style='background-color:{color}; opacity:0.7; padding:2px; border-radius:4px;'>{span2}</mark>",
+            highlighted_text,
+            flags=re.IGNORECASE
+        )
+
+    return highlighted_text
 
 st.title("Causal Relation Extraction")
 input_text = st.text_area("Enter your text here:", height=300)
 
 if st.button("Extract1"):
     if input_text:
-        cause, effect, signal = extract_arguments(input_text, tokenizer, model, beam_search=True)
+        cause_spans, effect_spans, signal_spans = extract_arguments(input_text, tokenizer, model, beam_search=True)
 
-        cause_text = mark_text(input_text, cause, "#FFD700")  # Gold for cause
-        effect_text = mark_text(input_text, effect, "#90EE90")  # Light green for effect
-        signal_text = mark_text(input_text, signal, "#FF6347")  # Tomato red for signal
+        cause_text = mark_text(input_text, cause_spans, "#FFD700")  
+        effect_text = mark_text(input_text, effect_spans, "#90EE90")  
+        signal_text = mark_text(input_text, signal_spans, "#FF6347")  
 
         st.markdown(f"**Cause Marked:**<br>{cause_text}", unsafe_allow_html=True)
         st.markdown(f"**Effect Marked:**<br>{effect_text}", unsafe_allow_html=True)
         st.markdown(f"**Signal Marked:**<br>{signal_text}", unsafe_allow_html=True)
-
