@@ -52,6 +52,8 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     with torch.no_grad():
         outputs = model(**inputs)
 
+    st.write("Model output keys:", outputs.keys())
+
     # Extract logits
     start_cause_logits = outputs["start_arg0_logits"][0]
     end_cause_logits = outputs["end_arg0_logits"][0]
