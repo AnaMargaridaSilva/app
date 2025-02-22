@@ -106,7 +106,7 @@ class ST2ModelV2(nn.Module):
             'signal_classification_logits': signal_classification_logits
         }
 
-     def position_selector(
+    def position_selector(
         self,
         start_cause_logits, 
         start_effect_logits, 
@@ -181,7 +181,7 @@ class ST2ModelV2(nn.Module):
         return start_cause, end_cause, start_effect, end_effect
 
 
-     def beam_search_position_selector(
+    def beam_search_position_selector(
         self,
         start_cause_logits, 
         start_effect_logits, 
