@@ -105,20 +105,12 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
 
     return (cause1, cause2), (effect1, effect2), (signal1, signal2)
 
-def mark_text(original_text, spans, color):
-    """Highlight each extracted span in separate sentences."""
-    highlighted_text = ""
-    span1, span2 = spans
+def mark_text(cause_spans, effect_spans, signal_spans):
+    """Format the output in the desired structure for Result1 and Result2."""
+    result1 = f"<p><strong>Result 1:</strong><br>Cause: {cause_spans[0]}<br>Effect: {effect_spans[0]}<br>Signal: {signal_spans[0]}</p>"
+    result2 = f"<p><strong>Result 2:</strong><br>Cause: {cause_spans[1]}<br>Effect: {effect_spans[1]}<br>Signal: {signal_spans[1]}</p>"
 
-    # Highlight span1 in the first sentence
-    if span1:
-        highlighted_text += f"<p><strong>Result 1:</strong><br><mark style='background-color:{color}; padding:2px; border-radius:4px;'>{span1}</mark></p>"
-
-    # Highlight span2 in the second sentence
-    if span2 and span2 != span1:
-        highlighted_text += f"<p><strong>Result 2:</strong><br><mark style='background-color:{color}; opacity:0.7; padding:2px; border-radius:4px;'>{span2}</mark></p>"
-
-    return highlighted_text
+    return result1 + result2
 
 st.title("Causal Relation Extraction")
 input_text = st.text_area("Enter your text here:", height=300)
@@ -127,11 +119,8 @@ if st.button("Extract1"):
     if input_text:
         cause_spans, effect_spans, signal_spans = extract_arguments(input_text, tokenizer, model, beam_search=True)
 
-        # For each span type, mark the text and create separate sentences
-        cause_text = mark_text(input_text, cause_spans, "#FFD700")  
-        effect_text = mark_text(input_text, effect_spans, "#90EE90")  
-        signal_text = mark_text(input_text, signal_spans, "#FF6347")  
+        # Format the extracted spans into the desired result structure
+        formatted_result = mark_text(cause_spans, effect_spans, signal_spans)
 
-        st.markdown(f"**Cause Extraction Results:**<br>{cause_text}", unsafe_allow_html=True)
-        st.markdown(f"**Effect Extraction Results:**<br>{effect_text}", unsafe_allow_html=True)
-        st.markdown(f"**Signal Extraction Results:**<br>{signal_text}", unsafe_allow_html=True)
+        # Display the formatted result with separate cause, effect, and signal for each result
+        st.markdown(f"{formatted_result}", unsafe_allow_html=True)
