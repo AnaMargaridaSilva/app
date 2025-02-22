@@ -127,8 +127,8 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
         end_signal = end_signal_logits.argmax().item()
 
     if not has_signal:
-        start_signal = NULL
-        end_signal = NULL
+        start_signal = 'NULL'
+        end_signal = 'NULL'
         
 
     tokens = tokenizer.convert_ids_to_tokens(inputs["input_ids"][0])
