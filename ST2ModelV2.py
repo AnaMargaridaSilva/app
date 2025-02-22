@@ -214,7 +214,7 @@ class ST2ModelV2(nn.Module):
         # Instantiate and return the model
         model = cls(args, config)
         # Check if safetensors file exists
-        safetensors_path = f"{model_name_or_path}/model.safetensor"
+        safetensors_path = f"{model_name_or_path}/model.safetensors"
         if os.path.exists(safetensors_path):
             # Load model from safetensors
             model.load_state_dict(load_file(safetensors_path))
