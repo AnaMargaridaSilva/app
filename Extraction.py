@@ -1,7 +1,7 @@
 import streamlit as st
 import torch
 from safetensors.torch import load_file
-from transformers import AutoConfig, AutoTokenizer
+from transformers import AutoConfig, AutoTokenizer, AutoModel
 from ST2ModelV2 import ST2ModelV2
 from huggingface_hub import login
 
@@ -11,31 +11,36 @@ login(token=hf_token)
 # Load model & tokenizer once (cached for efficiency)
 @st.cache_resource
 def load_model():
-    model_name = "anamargarida/Extraction2"  # Example model name, update if needed
+    model_name = "anamargarida/Extraction2"  # Update if needed
     
     # Load the configuration and tokenizer from Hugging Face Hub
     config = AutoConfig.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    
 
+    # Create an args object with necessary parameters
+    class Args:
+        def __init__(self):
+            self.model_name_or_path = model_name
+            self.dropout = 0.1  # Example dropout value
+            self.mlp = False
+            self.add_signal_bias = False
+            self.signal_classification = False
+            self.pretrained_signal_detector = False
 
-    # Pass the necessary args to the model constructor (example: args with dropout)
-    args = type('', (), {})()  # Creating a dummy object for args
-    args.model_name_or_path = model_name
-    args.dropout = 0.1  # Example dropout value, you can adjust as necessary
-    args.mlp = False  # Adjust according to your needs
-    args.add_signal_bias = False  # Adjust as needed
-    args.signal_classification = False  # Adjust as needed
-    args.pretrained_signal_detector = False  # Adjust as needed
-    
+    args = Args()
+
     # Instantiate the model with config
-    model = ST2ModelV2(args, config)  # Assuming the model accepts the config
-    
-    # Load the model weights into your model
-    model.load_state_dict(state_dict)
+    model = ST2ModelV2(args, config)
 
-    model.eval()  # Set the model to evaluation mode
-    
+    # Load model weights
+    model_path = "path_to_model_weights.pth"  # Update this path
+    if os.path.exists(model_path):
+        state_dict = torch.load(model_path, map_location=torch.device("cpu"))
+        model.load_state_dict(state_dict)
+    else:
+        raise FileNotFoundError(f"Model weights not found at {model_path}")
+
+    model.eval()  # Set model to evaluation mode
     return tokenizer, model
 
 # Load the model and tokenizer
