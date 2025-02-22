@@ -12,13 +12,13 @@ login(token=hf_token)
 # Load model & tokenizer once (cached for efficiency)
 @st.cache_resource
 def load_model():
-    model_name = "anamargarida/Extraction2"  # Update with your actual model name
     
-    # Load the configuration and tokenizer from Hugging Face Hub
+    model_name = "anamargarida/Extraction3"  
+    
     config = AutoConfig.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-    # Define arguments as needed
+    
     class Args:
         def __init__(self):
             self.model_name_or_path = model_name
