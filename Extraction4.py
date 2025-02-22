@@ -110,9 +110,9 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     has_signal = 1
     if args.signal_classification:
         if not args.pretrained_signal_detector:
-            has_signal = outputs["signal_classification_logits"][i].argmax().item()
+            has_signal = outputs["signal_classification_logits"].argmax().item()
         else:
-            has_signal = signal_detector.predict(text=batch["text"][i])
+            has_signal = signal_detector.predict(text=batch["text"])
 
     if has_signal:
         start_signal_logits[0] = -1e-4
