@@ -46,9 +46,12 @@ tokenizer, model = load_model()
 
 import copy
 
-def extract_arguments(text, tokenizer, model):
-    inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True, return_offsets_mapping=True)
-    word_ids = [idx for idx, offset in enumerate(inputs["offset_mapping"][0]) if offset != (0, 0)]
+import streamlit as st
+import torch
+import copy
+
+def extract_arguments(text, tokenizer, model, args):
+    inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True)
     attention_mask = inputs["attention_mask"][0]
 
     with torch.no_grad():
@@ -59,10 +62,10 @@ def extract_arguments(text, tokenizer, model):
     end_cause_logits = outputs["end_arg0_logits"][0]
     start_effect_logits = outputs["start_arg1_logits"][0]
     end_effect_logits = outputs["end_arg1_logits"][0]
-    start_signal_logits = outputs["start_sig_logits"][0] if "start_sig_logits" in outputs else None
-    end_signal_logits = outputs["end_sig_logits"][0] if "end_sig_logits" in outputs else None
+    start_signal_logits = outputs.get("start_sig_logits", None)
+    end_signal_logits = outputs.get("end_sig_logits", None)
 
-    # Apply Beam Search if enabled
+    # Beam Search for position selection
     if args.beam_search:
         indices1, indices2, _, _, _ = model.beam_search_position_selector(
             start_cause_logits=start_cause_logits,
@@ -70,12 +73,12 @@ def extract_arguments(text, tokenizer, model):
             start_effect_logits=start_effect_logits,
             end_effect_logits=end_effect_logits,
             attention_mask=attention_mask,
-            word_ids=word_ids,
+            word_ids=None,  # No offsets needed
             topk=args.topk,
         )
         start_cause, end_cause, start_effect, end_effect = indices1
     else:
-        # Mask out padding tokens for standard argmax selection
+        # Mask out padding tokens before argmax selection
         for logits in [start_cause_logits, end_cause_logits, start_effect_logits, end_effect_logits]:
             logits -= (1 - attention_mask) * 1e4
 
@@ -85,13 +88,14 @@ def extract_arguments(text, tokenizer, model):
         end_effect = end_effect_logits.argmax().item()
 
     # Signal classification check
-    has_signal = True  # Default to True for now
+    has_signal = True  # Default to True
     if args.signal_classification:
         if not args.pretrained_signal_detector:
             has_signal = outputs["signal_classification_logits"][0].argmax().item()
         else:
             has_signal = signal_detector.predict(text=text)  # External detector
 
+    # Handle signal start/end indices
     if has_signal and start_signal_logits is not None and end_signal_logits is not None:
         start_signal = start_signal_logits.argmax().item()
         end_signal_logits[:start_signal] = -1e4
@@ -100,23 +104,15 @@ def extract_arguments(text, tokenizer, model):
     else:
         start_signal, end_signal = None, None
 
-    # Convert token IDs back to words
-    space_splitted_tokens = text.split()
+    # Convert token indices to words
+    tokens = tokenizer.convert_ids_to_tokens(inputs["input_ids"][0])
+    
+    cause = tokenizer.convert_tokens_to_string(tokens[start_cause:end_cause+1]) if start_cause is not None and end_cause is not None else ""
+    effect = tokenizer.convert_tokens_to_string(tokens[start_effect:end_effect+1]) if start_effect is not None and end_effect is not None else ""
+    signal = tokenizer.convert_tokens_to_string(tokens[start_signal:end_signal+1]) if start_signal is not None and end_signal is not None else ""
 
-    def wrap_tokens(start, end, tag):
-        """Helper function to wrap extracted tokens with tags."""
-        if start is not None and end is not None and start < len(space_splitted_tokens) and end < len(space_splitted_tokens):
-            space_splitted_tokens[start] = f"<{tag}>" + space_splitted_tokens[start]
-            space_splitted_tokens[end] = space_splitted_tokens[end] + f"</{tag}>"
+    return cause, effect, signal
 
-    # Wrap detected entities
-    wrap_tokens(start_cause, end_cause, "ARG0")
-    wrap_tokens(start_effect, end_effect, "ARG1")
-    if has_signal:
-        wrap_tokens(start_signal, end_signal, "SIG0")
-
-    result_text = " ".join(space_splitted_tokens)
-    return result_text
 
 
 
