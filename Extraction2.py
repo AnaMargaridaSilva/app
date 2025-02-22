@@ -57,7 +57,16 @@ if st.button("Extract"):
         # Extract and display the logits (adjust as needed for your use case)
         start_arg0_logits = outputs["start_arg0_logits"]
         end_arg0_logits = outputs["end_arg0_logits"]
+        start_arg1_logits = outputs["start_arg1_logits"]
+        end_arg1_logits = outputs["end_arg1_logits"]
+        start_sig_logits = outputs["start_sig_logits"]
+        end_sig_logits = outputs["end_sig_logits"]
         
         # Display results
         st.write("Start Arg0 logits:", start_arg0_logits)
         st.write("End Arg0 logits:", end_arg0_logits)
+        st.write("Start Arg1 logits:", start_arg1_logits)
+        st.write("End Arg1 logits:", end_arg1_logits)
+        st.write("Start Sig logits:", start_sig_logits)
+        st.write("End Sig logits:", end_sig_logits)
+
