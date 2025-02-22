@@ -89,7 +89,7 @@ def extract_arguments(text, tokenizer, model):
 
 
 if st.button("Extract Arguments"):
-    if user_input:
+    if input_text:
         cause, effect, signal = extract_arguments(input_text, tokenizer, model)
 
         # Highlight extracted arguments in the original text
