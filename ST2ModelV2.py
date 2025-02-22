@@ -43,24 +43,7 @@ class ST2ModelV2(nn.Module):
         self.dropout = nn.Dropout(classifier_dropout)
         self.classifier = nn.Linear(self.config.hidden_size, 6)
 
-        if args.mlp:
-            self.classifier = nn.Sequential(
-                nn.Linear(self.config.hidden_size, self.config.hidden_size),
-                nn.ReLU(),
-                nn.Linear(self.config.hidden_size, 6),
-                nn.Tanh(),
-                nn.Linear(6, 6),
-            )
-
-        if args.add_signal_bias:
-            self.signal_phrases_layer = nn.Parameter(
-                torch.normal(
-                    mean=self.model.embeddings.word_embeddings.weight.data.mean(), 
-                    std=self.model.embeddings.word_embeddings.weight.data.std(),
-                    size=(1, self.config.hidden_size),
-                )
-            )
-        
+    
         if self.args.signal_classification and not self.args.pretrained_signal_detector:
             self.signal_classifier = nn.Linear(self.config.hidden_size, 2)
 
@@ -94,9 +77,6 @@ class ST2ModelV2(nn.Module):
         )
 
         sequence_output = outputs[0]
-
-        if signal_bias_mask is not None and self.args.add_signal_bias:
-            sequence_output[signal_bias_mask == 1] += self.signal_phrases_layer
 
         sequence_output = self.dropout(sequence_output)
         logits = self.classifier(sequence_output)
