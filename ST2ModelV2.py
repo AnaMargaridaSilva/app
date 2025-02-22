@@ -187,27 +187,9 @@ class ST2ModelV2(nn.Module):
         start_effect_logits, 
         end_cause_logits, 
         end_effect_logits,
-        attention_mask,
-        word_ids,
         topk=5
      ):
-        # basic post processing (removing logits from [CLS], [SEP], [PAD])
-
-        start_cause_logits -= (1 - attention_mask) * 1e4
-        end_cause_logits -= (1 - attention_mask) * 1e4
-        start_effect_logits -= (1 - attention_mask) * 1e4
-        end_effect_logits -= (1 - attention_mask) * 1e4
-
-        start_cause_logits[0] = -1e4
-        end_cause_logits[0] = -1e4
-        start_effect_logits[0] = -1e4
-        end_effect_logits[0] = -1e4
-
-        start_cause_logits[len(word_ids) - 1] = -1e4
-        end_cause_logits[len(word_ids) - 1] = -1e4
-        start_effect_logits[len(word_ids) - 1] = -1e4
-        end_effect_logits[len(word_ids) - 1] = -1e4
-
+        
         start_cause_logits = torch.log(torch.softmax(start_cause_logits, dim=-1))
         end_cause_logits = torch.log(torch.softmax(end_cause_logits, dim=-1))
         start_effect_logits = torch.log(torch.softmax(start_effect_logits, dim=-1))
@@ -215,19 +197,12 @@ class ST2ModelV2(nn.Module):
 
         scores = dict()
         for i in range(len(end_cause_logits)):
-            if attention_mask[i] == 0:
-                break
+            
             for j in range(i + 1, len(start_effect_logits)):
-                if attention_mask[j] == 0:
-                    break
                 scores[str((i, j, "before"))] = end_cause_logits[i].item() + start_effect_logits[j].item()
         
         for i in range(len(end_effect_logits)):
-            if attention_mask[i] == 0:
-                break
             for j in range(i + 1, len(start_cause_logits)):
-                if attention_mask[j] == 0:
-                    break
                 scores[str((i, j, "after"))] = start_cause_logits[j].item() + end_effect_logits[i].item()
         
         
