@@ -15,18 +15,18 @@ from safetensors.torch import load_file
 
 class ST2ModelV2(nn.Module):
     @classmethod
-    def from_pretrained(cls, model_name_or_path, args=None, **kwargs):
+    def from_pretrained(cls, model_name, args=None, **kwargs):
         """
         Custom from_pretrained method to load model from Hugging Face.
         """
         # Load configuration
-        config = AutoConfig.from_pretrained(model_name_or_path)
+        config = AutoConfig.from_pretrained(model_name)
         
         # Instantiate the model
         model = cls(args, config)
 
         # Load pre-trained weights from Hugging Face
-        model.model = AutoModel.from_pretrained(model_name_or_path, config=config)
+        model.model = AutoModel.from_pretrained(model_name, config=config)
 
         return model
         
@@ -36,18 +36,18 @@ class ST2ModelV2(nn.Module):
         self.config = config
 
         # Ensure hidden_size exists
-        hidden_size = getattr(config, "hidden_size", 768)
+        self.config = AutoConfig.from_pretrained(args.model_name)
 
         # Define classifier layers
         classifier_dropout = 0.3
         self.dropout = nn.Dropout(classifier_dropout)
-        self.classifier = nn.Linear(hidden_size, 6)
+        self.classifier = nn.Linear(self.config.hidden_size, 6)
 
         if args.mlp:
             self.classifier = nn.Sequential(
-                nn.Linear(hidden_size, hidden_size),
+                nn.Linear(self.config.hidden_size, self.config.hidden_size),
                 nn.ReLU(),
-                nn.Linear(hidden_size, 6),
+                nn.Linear(self.config.hidden_size, 6),
                 nn.Tanh(),
                 nn.Linear(6, 6),
             )
@@ -55,12 +55,14 @@ class ST2ModelV2(nn.Module):
         if args.add_signal_bias:
             self.signal_phrases_layer = nn.Parameter(
                 torch.normal(
-                    mean=0.0, std=1.0, size=(1, hidden_size)
+                    mean=self.model.embeddings.word_embeddings.weight.data.mean(), 
+                    std=self.model.embeddings.word_embeddings.weight.data.std(),
+                    size=(1, self.config.hidden_size),
                 )
             )
         
-        if args.signal_classification and not args.pretrained_signal_detector:
-            self.signal_classifier = nn.Linear(hidden_size, 2)
+        if self.args.signal_classification and not self.args.pretrained_signal_detector:
+            self.signal_classifier = nn.Linear(self.config.hidden_size, 2)
 
     def forward(
         self,
