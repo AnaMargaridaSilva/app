@@ -116,7 +116,7 @@ def mark_text(original_text, span, color):
 
 st.title("Causal Relation Extraction")
 input_text = st.text_area("Enter your text here:", height=300)
-beam_search = False 
+beam_search = True
 
 if st.button("Extract1"):
     if input_text:
