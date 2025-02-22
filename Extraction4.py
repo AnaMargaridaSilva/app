@@ -125,18 +125,20 @@ if st.button("Extract1"):
         effect_text1 = mark_text(input_text, effect1, "#90EE90")  # Light green for effect
         signal_text1 = mark_text(input_text, signal1, "#FF6347")  # Tomato red for signal
 
-        cause_text2 = mark_text(input_text, cause2, "#FFD700")  # Gold for cause
-        effect_text2 = mark_text(input_text, effect2, "#90EE90")  # Light green for effect
-        signal_text2 = mark_text(input_text, signal2, "#FF6347")  # Tomato red for signal
-
         st.markdown(f"<span style='font-size: 24px;'><strong>Relation 1:</strong></span>", unsafe_allow_html=True)
         st.markdown(f"**Cause:**<br>{cause_text1}", unsafe_allow_html=True)
         st.markdown(f"**Effect:**<br>{effect_text1}", unsafe_allow_html=True)
         st.markdown(f"**Signal:**<br>{signal_text1}", unsafe_allow_html=True)
 
-        st.markdown(f"<span style='font-size: 24px;'><strong>Relation 2:</strong></span>", unsafe_allow_html=True)
-        st.markdown(f"**Cause:**<br>{cause_text2}", unsafe_allow_html=True)
-        st.markdown(f"**Effect:**<br>{effect_text2}", unsafe_allow_html=True)
-        st.markdown(f"**Signal:**<br>{signal_text2}", unsafe_allow_html=True)
+        if beam_search:
+
+            cause_text2 = mark_text(input_text, cause2, "#FFD700")  # Gold for cause
+            effect_text2 = mark_text(input_text, effect2, "#90EE90")  # Light green for effect
+            signal_text2 = mark_text(input_text, signal2, "#FF6347")  # Tomato red for signal
+    
+            st.markdown(f"<span style='font-size: 24px;'><strong>Relation 2:</strong></span>", unsafe_allow_html=True)
+            st.markdown(f"**Cause:**<br>{cause_text2}", unsafe_allow_html=True)
+            st.markdown(f"**Effect:**<br>{effect_text2}", unsafe_allow_html=True)
+            st.markdown(f"**Signal:**<br>{signal_text2}", unsafe_allow_html=True)
     else:
         st.warning("Please enter some text before extracting.")
