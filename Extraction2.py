@@ -23,8 +23,6 @@ def load_model():
         def __init__(self):
             self.model_name_or_path = model_name
             self.dropout = 0.1
-            self.mlp = False
-            self.add_signal_bias = False
             self.signal_classification = False
             self.pretrained_signal_detector = False
 
