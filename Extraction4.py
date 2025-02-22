@@ -99,46 +99,44 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     def extract_span(start, end):
         return tokenizer.convert_tokens_to_string(tokens[start:end+1]) if start is not None and end is not None else ""
 
-    cause1, cause2 = extract_span(start_cause1, end_cause1), extract_span(start_cause2, end_cause2)
-    effect1, effect2 = extract_span(start_effect1, end_effect1), extract_span(start_effect2, end_effect2)
-    signal1, signal2 = extract_span(start_signal1, end_signal1), extract_span(start_signal2, end_signal2)
+    cause1 = extract_span(start_cause1, end_cause1)
+    cause2 = extract_span(start_cause2, end_cause2)
+    effect1 = extract_span(start_effect1, end_effect1)
+    effect2 = extract_span(start_effect2, end_effect2)
+    signal1 = extract_span(start_signal1, end_signal1)
+    signal2 = extract_span(start_signal2, end_signal2)
 
-    return (cause1, cause2), (effect1, effect2), (signal1, signal2)
+    return cause1, cause2, effect1, effect2, signal1, signal2
 
-def mark_text(original_text, cause_spans, effect_spans, signal_spans):
+def mark_text(original_text, span, color):
     """Replace extracted span with a colored background marker."""
-    def highlight(span, color):
-        return f"<mark style='background-color:{color}; padding:2px; border-radius:4px;'>{span}</mark>"
-
-    cause1, cause2 = cause_spans
-    effect1, effect2 = effect_spans
-    signal1, signal2 = signal_spans
-
-    # Mark up the cause, effect, and signal for both Result 1 and Result 2
-    result1_text = original_text
-    result1_text = result1_text.replace(cause1, highlight(cause1, "#FFD700"))  # Gold for cause
-    result1_text = result1_text.replace(effect1, highlight(effect1, "#90EE90"))  # Light green for effect
-    result1_text = result1_text.replace(signal1, highlight(signal1, "#FF6347"))  # Tomato red for signal
-
-    result2_text = original_text
-    result2_text = result2_text.replace(cause2, highlight(cause2, "#FFD700"))
-    result2_text = result2_text.replace(effect2, highlight(effect2, "#90EE90"))
-    result2_text = result2_text.replace(signal2, highlight(signal2, "#FF6347"))
-
-    result1 = f"<p><strong>Result 1:</strong><br>{result1_text}</p>"
-    result2 = f"<p><strong>Result 2:</strong><br>{result2_text}</p>"
-
-    return result1 + result2
+    if span:
+        return re.sub(re.escape(span), f"<mark style='background-color:{color}; padding:2px; border-radius:4px;'>{span}</mark>", original_text, flags=re.IGNORECASE)
+    return original_text  # Return unchanged text if no span is found
 
 st.title("Causal Relation Extraction")
 input_text = st.text_area("Enter your text here:", height=300)
 
 if st.button("Extract1"):
     if input_text:
-        cause_spans, effect_spans, signal_spans = extract_arguments(input_text, tokenizer, model, beam_search=True)
+        cause1, cause2, effect1, effect2, signal1, signal2 = extract_arguments(input_text, tokenizer, model, beam_search=True)
 
-        # Format and highlight the extracted spans in the original text
-        highlighted_result = mark_text(input_text, cause_spans, effect_spans, signal_spans)
+        cause_text1 = mark_text(input_text, cause1, "#FFD700")  # Gold for cause
+        effect_text1 = mark_text(input_text, effect1, "#90EE90")  # Light green for effect
+        signal_text1 = mark_text(input_text, signal1, "#FF6347")  # Tomato red for signal
 
-        # Display the highlighted result with separate cause, effect, and signal for each result
-        st.markdown(f"{highlighted_result}", unsafe_allow_html=True)
+        cause_text2 = mark_text(input_text, cause2, "#FFD700")  # Gold for cause
+        effect_text2 = mark_text(input_text, effect2, "#90EE90")  # Light green for effect
+        signal_text2 = mark_text(input_text, signal2, "#FF6347")  # Tomato red for signal
+
+        st.markdown(f"**Relation 1:**", unsafe_allow_html=True)
+        st.markdown(f"**Cause:**<br>{cause_text1}", unsafe_allow_html=True)
+        st.markdown(f"**Effect:**<br>{effect_text1}", unsafe_allow_html=True)
+        st.markdown(f"**Signal:**<br>{signal_text1}", unsafe_allow_html=True)
+
+        st.markdown(f"**Relation 2:**", unsafe_allow_html=True)
+        st.markdown(f"**Cause:**<br>{cause_text2}", unsafe_allow_html=True)
+        st.markdown(f"**Effect:**<br>{effect_text2}", unsafe_allow_html=True)
+        st.markdown(f"**Signal:**<br>{signal_text2}", unsafe_allow_html=True)
+    else:
+        st.warning("Please enter some text before extracting.")
