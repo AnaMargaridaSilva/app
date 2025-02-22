@@ -64,7 +64,7 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
 
     st.write("start_cause_logits", start_cause_logits)
     st.write("end_cause_logits", end_cause_logits)
-    st.write("start_effect_logits", start_effect_logitss)
+    st.write("start_effect_logits", start_effect_logits)
     st.write("end_effect_logits", end_effect_logits)
     st.write("start_signal_logits", start_signal_logits)
     st.write("end_signal_logits", end_signal_logits)
