@@ -115,24 +115,7 @@ if st.button("Extract Arguments"):
         st.warning("Please enter some text before extracting.")
 
 
-"""
-if st.button("Extract Arguments"):
-    if input_text:
-        cause, effect, signal = extract_arguments(input_text, tokenizer, model)
 
-        # Highlight extracted arguments in the original text
-        highlighted_text = input_text
-        if cause:
-            highlighted_text = highlighted_text.replace(cause, f"<span style='color:blue; font-weight:bold;'>{cause}</span>")
-        if effect:
-            highlighted_text = highlighted_text.replace(effect, f"<span style='color:green; font-weight:bold;'>{effect}</span>")
-        if signal:
-            highlighted_text = highlighted_text.replace(signal, f"<span style='color:red; font-weight:bold;'>{signal}</span>")
-
-        st.markdown(f"**Extracted Arguments:**<br>{highlighted_text}", unsafe_allow_html=True)
-    else:
-        st.warning("Please enter some text before extracting.")
-"""
 
 #if st.button("Extract"):
     #if input_text:
