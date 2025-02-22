@@ -197,3 +197,20 @@ class ST2ModelV2(nn.Module):
             'signal_classification_loss': signal_classification_loss,
             'loss': total_loss,
         }
+
+    @classmethod
+    def from_pretrained(cls, model_name_or_path, *args, **kwargs):
+        """
+        Custom from_pretrained method to load model.
+        """
+        # Create an args object, you can customize it as needed
+        args = type('', (), {})()  # creating a dummy object for args
+        args.model_name_or_path = model_name_or_path
+        
+        # Load configuration and tokenizer
+        config = AutoConfig.from_pretrained(model_name_or_path)
+        
+        # Instantiate and return the model
+        model = cls(args, config)
+        model.load_state_dict(torch.load(model_name_or_path))  # Load weights from pre-trained model
+        return model
