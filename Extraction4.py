@@ -66,6 +66,11 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     end_cause_logits[0] = -1e-4
     start_effect_logits[0] = -1e-4
     end_effect_logits[0] = -1e-4
+
+    start_cause_logits[len(inputs) - 1] = -1e-4
+    end_cause_logits[len(inputs) - 1]  = -1e-4
+    start_effect_logits[len(inputs) - 1]  = -1e-4
+    end_effect_logits[len(inputs) - 1]  = -1e-4
     
     # Beam Search for position selection
     if beam_search:
