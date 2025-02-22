@@ -8,6 +8,7 @@ from transformers import (
     AutoModelForSequenceClassification
     )
 from statistics import mode
+from safetensors.torch import load_file
 
 
 class ST2ModelV2(nn.Module):
@@ -212,5 +213,13 @@ class ST2ModelV2(nn.Module):
         
         # Instantiate and return the model
         model = cls(args, config)
-        model.load_state_dict(torch.load(model_name_or_path))  # Load weights from pre-trained model
+        # Check if safetensors file exists
+        safetensors_path = f"{model_name_or_path}/model.safetensor"
+        if os.path.exists(safetensors_path):
+            # Load model from safetensors
+            model.load_state_dict(load_file(safetensors_path))
+        else:
+            # Fallback to regular pytorch model loading (if needed)
+            model.load_state_dict(torch.load(f"{model_name_or_path}/pytorch_model.bin"))
+        
         return model
