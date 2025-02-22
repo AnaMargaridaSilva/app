@@ -131,6 +131,28 @@ if st.button("Extract Arguments1"):
         st.markdown(f"**Cause Marked:**<br>{cause_text}", unsafe_allow_html=True)
         st.markdown(f"**Effect Marked:**<br>{effect_text}", unsafe_allow_html=True)
         st.markdown(f"**Signal Marked:**<br>{signal_text}", unsafe_allow_html=True)
+
+        st.markdown("""
+        ### **Legend: Color Markers for Extracted Components**
+        <table style="border-collapse: collapse; width: 100%;">
+            <tr>
+                <th style="text-align: left; padding: 5px; border: 1px solid black;">Component</th>
+                <th style="text-align: left; padding: 5px; border: 1px solid black;">Color</th>
+            </tr>
+            <tr>
+                <td style="padding: 5px; border: 1px solid black;">Cause</td>
+                <td style="background-color: #FFD700; padding: 5px; border-radius: 4px;">🟡 Gold (#FFD700)</td>
+            </tr>
+            <tr>
+                <td style="padding: 5px; border: 1px solid black;">Effect</td>
+                <td style="background-color: #90EE90; padding: 5px; border-radius: 4px;">🟢 Light Green (#90EE90)</td>
+            </tr>
+            <tr>
+                <td style="padding: 5px; border: 1px solid black;">Signal</td>
+                <td style="background-color: #FF6347; padding: 5px; border-radius: 4px;">🔴 Tomato Red (#FF6347)</td>
+            </tr>
+        </table>
+        """, unsafe_allow_html=True)
     else:
         st.warning("Please enter some text before extracting.")
 
