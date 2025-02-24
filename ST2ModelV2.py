@@ -182,7 +182,6 @@ class ST2ModelV2(nn.Module):
         start_effect_logits, 
         end_cause_logits, 
         end_effect_logits,
-        attention_mask,
         topk=5
      ):
         
