@@ -93,6 +93,7 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
             end_cause_logits=end_cause_logits,
             start_effect_logits=start_effect_logits,
             end_effect_logits=end_effect_logits,
+            attention_mask=attention_mask,
             topk=5
         )
         start_cause1, end_cause1, start_effect1, end_effect1 = indices1
