@@ -78,7 +78,7 @@ class ST2ModelV2(nn.Module):
 
         sequence_output = outputs[0]
 
-        sequence_output = self.dropout(sequence_output)
+        #sequence_output = self.dropout(sequence_output)
         logits = self.classifier(sequence_output)
 
         # Split logits 
