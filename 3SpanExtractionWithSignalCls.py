@@ -138,7 +138,7 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     #for position, (token_id, token) in enumerate(zip(token_ids, tokens)):
         #st.write(f"Position: {position}, ID: {token_id}, Token: {token}")
 
-    st.write(f"Start Cause 1: {start_cause1}, End Cause: {end_causet2}")
+    st.write(f"Start Cause 1: {start_cause1}, End Cause: {end_cause2}")
     st.write(f"Start Effect 1: {start_effect1}, End Cause: {end_effect2}")
     st.write(f"Start Signal: {start_signal}, End Signal: {end_signal}")
 
