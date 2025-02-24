@@ -39,8 +39,8 @@ class ST2ModelV2(nn.Module):
         self.config = AutoConfig.from_pretrained(args.model_name)
 
         # Define classifier layers
-        classifier_dropout = self.args.dropout
-        self.dropout = nn.Dropout(classifier_dropout)
+        #classifier_dropout = self.args.dropout
+        #self.dropout = nn.Dropout(classifier_dropout)
         self.classifier = nn.Linear(self.config.hidden_size, 6)
 
     
