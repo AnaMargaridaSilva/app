@@ -182,6 +182,7 @@ class ST2ModelV2(nn.Module):
         start_effect_logits, 
         end_cause_logits, 
         end_effect_logits,
+        attention_mask,
         topk=5
      ):
         
@@ -192,13 +193,20 @@ class ST2ModelV2(nn.Module):
 
         scores = dict()
         for i in range(len(end_cause_logits)):
-            
+            if attention_mask[i] == 0:
+                break
             for j in range(i + 1, len(start_effect_logits)):
-                scores[str((i, j, "before"))] = end_cause_logits[i].item() + start_effect_logits[j].item()
+                if attention_mask[j] == 0:
+                    break
+                scores[(i, j, "before")] = end_cause_logits[i].item() + start_effect_logits[j].item()
         
         for i in range(len(end_effect_logits)):
+            if attention_mask[i] == 0:
+                break
             for j in range(i + 1, len(start_cause_logits)):
-                scores[str((i, j, "after"))] = start_cause_logits[j].item() + end_effect_logits[i].item()
+                if attention_mask[j] == 0:
+                    break
+                scores[(i, j, "after")] = start_cause_logits[j].item() + end_effect_logits[i].item()
         
         
         topk_scores = dict()
