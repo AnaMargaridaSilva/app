@@ -80,12 +80,12 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     start_effect_logits[len(inputs["input_ids"][0]) - 1] = -1e-4
     end_effect_logits[len(inputs["input_ids"][0]) - 1] = -1e-4
 
-    #st.write("start_cause_logits", start_cause_logits)
-    #st.write("end_cause_logits", end_cause_logits)
-    #st.write("start_effect_logits", start_effect_logits)
-    #st.write("end_effect_logits", end_effect_logits)
-    #st.write("start_signal_logits", start_signal_logits)
-    #st.write("end_signal_logits", end_signal_logits)
+    st.write("start_cause_logits", start_cause_logits)
+    st.write("end_cause_logits", end_cause_logits)
+    st.write("start_effect_logits", start_effect_logits)
+    st.write("end_effect_logits", end_effect_logits)
+    st.write("start_signal_logits", start_signal_logits)
+    st.write("end_signal_logits", end_signal_logits)
     
     # Beam Search for position selection
     if beam_search:
@@ -138,8 +138,9 @@ def extract_arguments(text, tokenizer, model, beam_search=True):
     #for position, (token_id, token) in enumerate(zip(token_ids, tokens)):
         #st.write(f"Position: {position}, ID: {token_id}, Token: {token}")
 
-    
-    #st.write(f"Start Signal: {start_signal}, End Signal: {end_signal}")
+     st.write(f"Start Cause 1: {start_cause1}, End Cause: {end_causet2}")
+    st.write(f"Start Effect 1: {start_effect1}, End Cause: {end_effect2}")
+    st.write(f"Start Signal: {start_signal}, End Signal: {end_signal}")
 
     def extract_span(start, end):
         return tokenizer.convert_tokens_to_string(tokens[start:end+1]) if start is not None and end is not None else ""
