@@ -11,7 +11,7 @@ hf_token = st.secrets["HUGGINGFACE_TOKEN"]
 login(token=hf_token)
 
 # Load model & tokenizer once (cached for efficiency)
-# @st.cache_resource
+@st.cache_resource
 def load_model():
     
     model_name = "anamargarida/SpanExtractionWithSignalCls_2"  
