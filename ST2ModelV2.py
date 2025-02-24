@@ -39,8 +39,8 @@ class ST2ModelV2(nn.Module):
         self.config = AutoConfig.from_pretrained(args.model_name)
 
         # Define classifier layers
-        classifier_dropout = self.args.dropout
-        self.dropout = nn.Dropout(classifier_dropout)
+        # classifier_dropout = self.args.dropout
+        # self.dropout = nn.Dropout(classifier_dropout)
         self.classifier = nn.Linear(self.config.hidden_size, 6)
 
     
@@ -53,11 +53,8 @@ class ST2ModelV2(nn.Module):
         attention_mask=None,
         token_type_ids=None,
         position_ids=None,
-        signal_bias_mask=None,
         head_mask=None,
         inputs_embeds=None,
-        start_positions=None,
-        end_positions=None,
         output_attentions=None,
         output_hidden_states=None,
         return_dict=None,
@@ -77,8 +74,6 @@ class ST2ModelV2(nn.Module):
         )
 
         sequence_output = outputs[0]
-
-        sequence_output = self.dropout(sequence_output)
         logits = self.classifier(sequence_output)
 
         # Split logits 
