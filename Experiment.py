@@ -16,7 +16,7 @@ login(token=hf_token)
 @st.cache_resource
 def load_model():
     
-    model_name = "anamargarida/SpanExtractionWithSignalCls_2"  
+    model_name = "anamargarida/Experiment"  
     
     config = AutoConfig.from_pretrained("roberta-large")
     tokenizer = AutoTokenizer.from_pretrained("roberta-large")
