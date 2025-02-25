@@ -55,7 +55,7 @@ logger.setLevel(logging.DEBUG)
 
 # Test log message
 logger.debug("Debug logging is enabled for transformers!")
-
+print("Logging test", flush=True)
 
 
 def extract_arguments(text, tokenizer, model, beam_search=True):
