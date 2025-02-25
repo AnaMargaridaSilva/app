@@ -18,8 +18,8 @@ def load_model():
     
     model_name = "anamargarida/Experiment"  
     
-    config = AutoConfig.from_pretrained("roberta-large")
-    tokenizer = AutoTokenizer.from_pretrained("roberta-large")
+    config = AutoConfig.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     
     class Args:
