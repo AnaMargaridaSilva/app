@@ -20,7 +20,7 @@ class ST2ModelV2(nn.Module):
         Custom from_pretrained method to load model from Hugging Face.
         """
         # Load configuration
-        config = AutoConfig.from_pretrained("roberta-large")
+        config = AutoConfig.from_pretrained(model_name)
         
         # Instantiate the model
         model = cls(args, config)
@@ -36,7 +36,7 @@ class ST2ModelV2(nn.Module):
         self.config = config
 
         # Ensure hidden_size exists
-        self.config = AutoConfig.from_pretrained("roberta-large")
+        self.config = AutoConfig.from_pretrained(args.model_name)
 
         # Define classifier layers
         #classifier_dropout = self.args.dropout
