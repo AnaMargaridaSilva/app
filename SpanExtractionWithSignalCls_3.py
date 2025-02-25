@@ -40,8 +40,22 @@ def load_model():
 # Load the model and tokenizer
 tokenizer, model = load_model()
 
-from transformers.utils.logging import set_verbosity_debug
-st.write("debug", set_verbosity_debug())
+import logging
+import sys
+from transformers.utils.logging import set_verbosity_debug, enable_propagation
+
+# Enable verbose logging for transformers
+set_verbosity_debug()
+enable_propagation()
+
+# Configure Python's logging module to ensure logs appear
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logger = logging.getLogger("transformers")
+logger.setLevel(logging.DEBUG)
+
+# Test log message
+logger.debug("Debug logging is enabled for transformers!")
+
 
 
 def extract_arguments(text, tokenizer, model, beam_search=True):
