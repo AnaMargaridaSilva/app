@@ -18,8 +18,8 @@ def load_model():
     
     model_name = "anamargarida/SpanExtractionWithSignalCls_2"  
     
-    config = AutoConfig.from_pretrained(model_name)
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    config = AutoConfig.from_pretrained("roberta-large")
+    tokenizer = AutoTokenizer.from_pretrained("roberta-large")
 
     
     class Args:
