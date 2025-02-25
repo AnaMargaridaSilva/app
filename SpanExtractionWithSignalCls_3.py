@@ -10,6 +10,9 @@ import copy
 hf_token = st.secrets["HUGGINGFACE_TOKEN"]
 login(token=hf_token)
 
+from transformers.utils.logging import set_verbosity_debug
+set_verbosity_debug()
+
 # Load model & tokenizer once (cached for efficiency)
 @st.cache_resource
 def load_model():
