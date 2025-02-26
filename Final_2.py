@@ -44,7 +44,7 @@ st.write("model_weights", model.model)
 st.write("config", model.config)
 st.write("Signal_classifier_weights", model.signal_classifier.weight)
 st.write(model.model.embeddings.LayerNorm.weight)
-st.write(model.model.encoder.layer.13.attention.self.value.weight)
+#st.write(model.model.encoder.layer.13.attention.self.value.weight)
 roberta_model = AutoModel.from_pretrained("roberta-large")
 st.write(roberta_model.embeddings.LayerNorm.weight)
 
