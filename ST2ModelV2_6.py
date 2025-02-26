@@ -108,6 +108,81 @@ class ST2ModelV2(nn.Module):
         
         return model
 
+    def position_selector(
+        self,
+        start_cause_logits, 
+        start_effect_logits, 
+        end_cause_logits, 
+        end_effect_logits,
+        attention_mask,
+        word_ids,
+     ):
+        # basic post processing (removing logits from [CLS], [SEP], [PAD])
+        start_cause_logits -= (1 - attention_mask) * 1e4
+        end_cause_logits -= (1 - attention_mask) * 1e4
+        start_effect_logits -= (1 - attention_mask) * 1e4
+        end_effect_logits -= (1 - attention_mask) * 1e4
+
+        start_cause_logits[0] = -1e4
+        end_cause_logits[0] = -1e4
+        start_effect_logits[0] = -1e4
+        end_effect_logits[0] = -1e4
+
+        start_cause_logits[len(word_ids) - 1] = -1e4
+        end_cause_logits[len(word_ids) - 1] = -1e4
+        start_effect_logits[len(word_ids) - 1] = -1e4
+        end_effect_logits[len(word_ids) - 1] = -1e4
+
+        start_cause_logits = torch.log(torch.softmax(start_cause_logits, dim=-1))
+        end_cause_logits = torch.log(torch.softmax(end_cause_logits, dim=-1))
+        start_effect_logits = torch.log(torch.softmax(start_effect_logits, dim=-1))
+        end_effect_logits = torch.log(torch.softmax(end_effect_logits, dim=-1))
+
+        max_arg0_before_arg1 = None
+        for i in range(len(end_cause_logits)):
+            if attention_mask[i] == 0:
+                break
+            for j in range(i + 1, len(start_effect_logits)):
+                if attention_mask[j] == 0:
+                    break
+
+                if max_arg0_before_arg1 is None:
+                    max_arg0_before_arg1 = ((i, j), end_cause_logits[i] + start_effect_logits[j])
+                else:
+                    if end_cause_logits[i] + start_effect_logits[j] > max_arg0_before_arg1[1]:
+                        max_arg0_before_arg1 = ((i, j), end_cause_logits[i] + start_effect_logits[j])
+        
+        max_arg0_after_arg1 = None
+        for i in range(len(end_effect_logits)):
+            if attention_mask[i] == 0:
+                break
+            for j in range(i + 1, len(start_cause_logits)):
+                if attention_mask[j] == 0:
+                    break
+                if max_arg0_after_arg1 is None:
+                    max_arg0_after_arg1 = ((i, j), start_cause_logits[j] + end_effect_logits[i])
+                else:
+                    if start_cause_logits[j] + end_effect_logits[i] > max_arg0_after_arg1[1]:
+                        max_arg0_after_arg1 = ((i, j), start_cause_logits[j] + end_effect_logits[i])
+
+        if max_arg0_before_arg1[1].item() > max_arg0_after_arg1[1].item():
+            end_cause, start_effect = max_arg0_before_arg1[0]
+            start_cause_logits[end_cause + 1:] = -1e4
+            start_cause = start_cause_logits.argmax().item()
+
+            end_effect_logits[:start_effect] = -1e4
+            end_effect = end_effect_logits.argmax().item()
+        else:
+            end_effect, start_cause = max_arg0_after_arg1[0]
+            end_cause_logits[:start_cause] = -1e4
+            end_cause = end_cause_logits.argmax().item()
+
+            start_effect_logits[end_effect + 1:] = -1e4
+            start_effect = start_effect_logits.argmax().item()
+        
+        return start_cause, end_cause, start_effect, end_effect
+
+
     def beam_search_position_selector(
         self,
         start_cause_logits, 
@@ -115,17 +190,16 @@ class ST2ModelV2(nn.Module):
         end_cause_logits, 
         end_effect_logits,
         topk=5
-    ):
-        """
-        Performs beam search to find the best positions for argument extraction.
-        """
+     ):
+        
         start_cause_logits = torch.log(torch.softmax(start_cause_logits, dim=-1))
         end_cause_logits = torch.log(torch.softmax(end_cause_logits, dim=-1))
         start_effect_logits = torch.log(torch.softmax(start_effect_logits, dim=-1))
         end_effect_logits = torch.log(torch.softmax(end_effect_logits, dim=-1))
 
-        scores = {}
+        scores = dict()
         for i in range(len(end_cause_logits)):
+            
             for j in range(i + 1, len(start_effect_logits)):
                 scores[str((i, j, "before"))] = end_cause_logits[i].item() + start_effect_logits[j].item()
         
@@ -133,13 +207,12 @@ class ST2ModelV2(nn.Module):
             for j in range(i + 1, len(start_cause_logits)):
                 scores[str((i, j, "after"))] = start_cause_logits[j].item() + end_effect_logits[i].item()
         
-        # Get top-k scores
-        topk_scores = {}
+        
+        topk_scores = dict()
         for i, (index, score) in enumerate(sorted(scores.items(), key=lambda x: x[1], reverse=True)[:topk]):
-            index_tuple = eval(index)
-            if index_tuple[2] == 'before':
-                end_cause = index_tuple[0]
-                start_effect = index_tuple[1]
+            if eval(index)[2] == 'before':
+                end_cause = eval(index)[0]
+                start_effect = eval(index)[1]
 
                 this_start_cause_logits = start_cause_logits.clone()
                 this_start_cause_logits[end_cause + 1:] = -1e9
@@ -151,30 +224,7 @@ class ST2ModelV2(nn.Module):
 
                 for m in range(len(start_cause_values)):
                     for n in range(len(end_effect_values)):
-                        topk_scores[str((start_cause_indices[m].item(), end_cause, start_effect, end_effect_indices[n].item()))] = (
-                            score + start_cause_values[m].item() + end_effect_values[n].item()
-                        )
-
-            elif index_tuple[2] == 'after':
-                start_cause = index_tuple[1]
-                end_effect = index_tuple[0]
-
-                this_end_cause_logits = end_cause_logits.clone()
-                this_end_cause_logits[:start_cause] = -1e9
-                end_cause_values, end_cause_indices = this_end_cause_logits.topk(topk)
-
-                this_start_effect_logits = start_effect_logits.clone()
-                this_start_effect_logits[end_effect + 1:] = -1e9
-                start_effect_values, start_effect_indices = this_start_effect_logits.topk(topk)
-
-                for m in range(len(end_cause_values)):
-                    for n in range(len(start_effect_values)):
-                        topk_scores[str((start_cause, end_cause_indices[m].item(), start_effect_indices[n].item(), end_effect))] = (
-                            score + end_cause_values[m].item() + start_effect_values[n].item()
-                        )
-
-        first, second = sorted(topk_scores.items(), key=lambda x: x[1], reverse=True)[:2]
-        return eval(first[0]), eval(second[0]), first[1], second[1], topk_scores
+                        topk_scores[str((start_cause_indices[m].item(), end_cause, start_effect, end_effect_indices[n].item()))] = score + start_cause_values[m].item() + end_effect_values[n].item()
 
             elif eval(index)[2] == 'after':
                 start_cause = eval(index)[1]
