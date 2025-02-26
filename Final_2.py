@@ -42,7 +42,7 @@ tokenizer, model = load_model()
 st.write("model_", model)
 st.write("model_weights", model.model)
 st.write("config", model.config)
-st.write("encoder", model.roberta.encoder.layer[0].attention.self.value.weight)
+st.write("Signal classifier weights:", model.signal_classifier.weight))
 
 model.eval()  # Set model to evaluation mode
 def extract_arguments(text, tokenizer, model, beam_search=True):
