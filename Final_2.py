@@ -43,7 +43,7 @@ st.write("model_", model)
 st.write("model_weights", model.model)
 st.write("config", model.config)
 st.write("Signal_classifier_weights", model.signal_classifier.weight)
-st.write("encoder", model.encoder.layer.23.output.LayerNorm.weight)
+st.write("encoder", model.encoder.layer.2.intermediate.dense.weight)
 
 model.eval()  # Set model to evaluation mode
 def extract_arguments(text, tokenizer, model, beam_search=True):
