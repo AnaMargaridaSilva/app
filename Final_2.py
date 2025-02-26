@@ -38,7 +38,8 @@ def load_model():
 
 # Load the model and tokenizer
 tokenizer, model = load_model()
-    
+
+st.write("model_weights", model.model)
 
 model.eval()  # Set model to evaluation mode
 def extract_arguments(text, tokenizer, model, beam_search=True):
