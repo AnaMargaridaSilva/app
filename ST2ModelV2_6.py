@@ -8,7 +8,7 @@ from transformers import (
     AutoModelForSequenceClassification
     )
 from statistics import mode
-#from safetensors.torch import load_file
+from safetensors.torch import load_file
 
 
 class ST2ModelV2(nn.Module):
