@@ -33,14 +33,14 @@ def load_model():
     # Load the model directly from Hugging Face
     model = ST2ModelV2.from_pretrained(model_name, config=config, args=args)
 
-    model.eval()  # Set model to evaluation mode
+    
     return tokenizer, model
 
 # Load the model and tokenizer
 tokenizer, model = load_model()
     
 
-
+model.eval()  # Set model to evaluation mode
 def extract_arguments(text, tokenizer, model, beam_search=True):
      
     class Args:
