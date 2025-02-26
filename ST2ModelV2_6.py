@@ -18,7 +18,7 @@ class ST2ModelV2(nn.Module):
         self.config = config
 
         # Load the base model (e.g., Roberta)
-        self.model = AutoModel.from_pretrained("roberta-large", config=config)
+        # self.model = AutoModel.from_pretrained("roberta-large", config=config)
 
         # Define classifier layers
         classifier_dropout = self.args.dropout
