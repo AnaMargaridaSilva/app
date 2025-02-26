@@ -44,6 +44,8 @@ st.write("model_weights", model.model)
 st.write("config", model.config)
 st.write("Signal_classifier_weights", model.signal_classifier.weight)
 st.write(model.model.embeddings.LayerNorm.weight)
+roberta_model = AutoModel.from_pretrained("roberta-large")
+st.write(roberta_model.embeddings.LayerNorm.weight)
 
 model.eval()  # Set model to evaluation mode
 def extract_arguments(text, tokenizer, model, beam_search=True):
