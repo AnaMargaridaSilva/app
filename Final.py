@@ -2,7 +2,7 @@ import streamlit as st
 import torch
 from safetensors.torch import load_file
 #from transformers import AutoConfig, AutoTokenizer, AutoModel
-from ST2ModelV2_5 import ST2ModelV2
+from ST2ModelV2_6 import ST2ModelV2
 from huggingface_hub import login
 import re
 import copy
