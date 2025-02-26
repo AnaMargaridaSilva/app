@@ -92,13 +92,13 @@ class ST2ModelV2(nn.Module):
         }
 
     @classmethod
-    def from_pretrained(cls, model_name, config=None, args=None, **kwargs):
+    def from_pretrained(cls, model_name, config=None, args=None):
         """
         Custom from_pretrained method to load the model from Hugging Face and initialize
         any additional components such as the classifier.
         """
         # Load the configuration
-        config = AutoConfig.from_pretrained(model_name) if config is None else config
+        config = AutoConfig.from_pretrained(model_name) 
         
         # Instantiate the model
         model = cls(args, config)
