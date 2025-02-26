@@ -31,7 +31,7 @@ def load_model():
     args = Args()
 
     # Load the model directly from Hugging Face
-    model = ST2ModelV2.from_pretrained(model_name, args=args)
+    model = ST2ModelV2.from_pretrained(model_name, config=config, args=args)
 
     model.eval()  # Set model to evaluation mode
     return tokenizer, model
