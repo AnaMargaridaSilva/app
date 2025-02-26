@@ -11,7 +11,6 @@ from statistics import mode
 from safetensors.torch import load_file
 
 
-
 class ST2ModelV2(nn.Module):
     def __init__(self, args, config):
         super(ST2ModelV2, self).__init__()
