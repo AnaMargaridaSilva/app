@@ -39,6 +39,7 @@ def load_model():
 # Load the model and tokenizer
 tokenizer, model = load_model()
 
+st.write("model_", model)
 st.write("model_weights", model.model)
 st.write("config", model.config)
 
