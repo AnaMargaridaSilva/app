@@ -105,6 +105,7 @@ class ST2ModelV2(nn.Module):
         
         # Load the pre-trained weights into the model
         model.model = AutoModel.from_pretrained(model_name, config=config, **kwargs, use_safetensors=False)
+        print(model.model)
         
         return model
         
