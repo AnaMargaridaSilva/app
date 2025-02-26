@@ -13,28 +13,32 @@ login(token=hf_token)
 
 
 # Load model & tokenizer once (cached for efficiency)
-
+@st.cache_resource
+def load_model():
     
-model_name = "anamargarida/Final"  
+    model_name = "anamargarida/Final"  
     
-config = AutoConfig.from_pretrained("model_name")
-tokenizer = AutoTokenizer.from_pretrained("model_name")
-
+    config = AutoConfig.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
     
-class Args:
-    def __init__(self):
-        self.model_name = model_name
-        self.dropout = 0.1
-        self.signal_classification = True
-        self.pretrained_signal_detector = False
-        
-args = Args()
+    class Args:
+        def __init__(self):
+            self.model_name = model_name
+            self.dropout = 0.1
+            self.signal_classification = False
+            self.pretrained_signal_detector = False
 
-# Load the model directly from Hugging Face
-model = ST2ModelV2.from_pretrained(model_name, config=config, args=args)
-model.eval()  
+    args = Args()
 
+    # Load the model directly from Hugging Face
+    model = ST2ModelV2.from_pretrained(model_name, args=args)
 
+    model.eval()  # Set model to evaluation mode
+    return tokenizer, model
+
+# Load the model and tokenizer
+tokenizer, model = load_model()
+    
 
 
 def extract_arguments(text, tokenizer, model, beam_search=True):
