@@ -18,8 +18,8 @@ def load_model():
     
     model_name = "anamargarida/Final"  
     
-    config = AutoConfig.from_pretrained("roberta-large")
-    tokenizer = AutoTokenizer.from_pretrained("roberta-large")
+    config = AutoConfig.from_pretrained("model_name")
+    tokenizer = AutoTokenizer.from_pretrained("model_name")
 
     
     class Args:
@@ -32,7 +32,7 @@ def load_model():
     args = Args()
 
     # Load the model directly from Hugging Face
-    model = ST2ModelV2.from_pretrained(model_name, args=args)
+    model = ST2ModelV2.from_pretrained(model_name, config=config, args=args)
 
     model.eval()  # Set model to evaluation mode
     return tokenizer, model
