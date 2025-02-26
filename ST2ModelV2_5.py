@@ -26,7 +26,7 @@ class ST2ModelV2(nn.Module):
         model = cls(args, config)
 
         # Load pre-trained weights from Hugging Face
-        model.model = AutoModel.from_pretrained(model_name, config=config)
+        model.model = AutoModel.from_pretrained(model_name, config=config, use_safetensors=False)
 
         return model
         
